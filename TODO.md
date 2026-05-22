@@ -99,7 +99,7 @@ links the chapter that specifies it. Order roughly follows the MVP staging in
 - [x] Vivliostyle exporter (shell out; AGPL boundary) ([spec/18](spec/18.md))
 - [x] Prince exporter (opt-in, path-gated) ([spec/18](spec/18.md))
 - [x] DeckTape exporter ([spec/19](spec/19.md))
-- [ ] DeckTape optional throwaway local server for asset-relative pages ([spec/19](spec/19.md))
+- [x] DeckTape throwaway local HTTP server for asset-relative reveal decks ([spec/19](spec/19.md))
 
 ## Stage 6 — Writers
 
