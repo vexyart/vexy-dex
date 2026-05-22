@@ -3,7 +3,7 @@
 # Dependencies
 
 Every dependency, why it was chosen, and its licence. Licence hazards are called
-out because vexy-dex ships under MIT and must not link AGPL/GPL code (spec/24).
+out because vexy-dexypy ships under MIT and must not link AGPL/GPL code (spec/24).
 
 ## Core (always installed)
 
@@ -44,12 +44,12 @@ out because vexy-dex ships under MIT and must not link AGPL/GPL code (spec/24).
 
 ## Vendored assets
 
-- **reveal.js 5.1** (MIT) — `src/vexy_dex/assets/reveal/` (reveal.css, reveal.js,
+- **reveal.js 5.1** (MIT) — `src/vexy_dexypy/assets/reveal/` (reveal.css, reveal.js,
   theme white.css). Bundled so the reveal exporter input and reveal preview are
   self-contained offline decks.
 
 ## Not a dependency
 
 - **webflow2reveal** — its `compiler.py` was copied and adapted into
-  `vexy_dex.importers.webflow` (author's own code, no constraint). The legacy
+  `vexy_dexypy.importers.webflow` (author's own code, no constraint). The legacy
   package is scheduled for removal once the importer reaches full parity.

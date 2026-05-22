@@ -1,7 +1,7 @@
 # this_file: tests/test_writers.py
 from __future__ import annotations
 
-from vexy_dex import writers
+from vexy_dexypy import writers
 
 
 def _make_pdf(path, pages: int):

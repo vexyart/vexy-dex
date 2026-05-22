@@ -1,8 +1,8 @@
 <!-- this_file: spec/00-tldr.md -->
 
-# vexy-dex Specification — Table of Contents & TL;DR
+# vexy-dexypy Specification — Table of Contents & TL;DR
 
-vexy-dex turns an HTML page into slide decks. One URL in; several folders out,
+vexy-dexypy turns an HTML page into slide decks. One URL in; several folders out,
 one per rendering strategy, each holding named single-page PDFs (and optional
 SVGs). The user assembles a final deck by picking the best slide from whichever
 strategy rendered it best.
@@ -18,12 +18,12 @@ Grounding: see [`../RESEARCH.md`](../RESEARCH.md) for the tool decisions and
 
 ## Chapters
 
-- **[01 — Overview, Scope & Non-Goals](01.md)** — What vexy-dex is, the
-  one-sentence scope, what it deliberately refuses to do, and the anti-bloat
-  rules that keep it honest.
+- **[01 — Overview, Scope & Non-Goals](01.md)** — What vexy-dexypy is, the
+  one-sentence scope, relationship with `vexy-dexyjs`, what it deliberately
+  refuses to do, and the anti-bloat rules that keep it honest.
 - **[02 — Architecture & the Six-Stage Pipeline](02.md)** — The hybrid
-  Python-orchestrator / subprocess-engine model, stage contracts, and why
-  divergent multi-strategy output is the product.
+  Python-orchestrator / browser-preprocessor / subprocess-engine model, stage
+  contracts, and why divergent multi-strategy output is the product.
 - **[03 — Data Model & Intermediate Representation](03.md)** — The typed
   artifacts that flow between stages (`Source`, `PageDoc`, `SlidePlan`,
   `RenderJob`, `DeckResult`), parsed-not-validated at every boundary.
@@ -34,27 +34,30 @@ Grounding: see [`../RESEARCH.md`](../RESEARCH.md) for the tool decisions and
   viewport/aspect profiles, strategy lists, and precedence (flags > config >
   defaults).
 - **[06 — Stage 1: Readers](06.md)** — Fetching HTML from URLs and files; static
-  (`httpx`) vs dynamic (`Playwright`) paths; the reader plugin contract.
+  (`httpx`) vs dynamic browser paths (standard `playwright`, `playwrightauthor`
+  persistent profiles, and `cloakbrowser` stealth Chromium); the reader plugin
+  contract.
 - **[07 — Asset Localization & Offline Bundling](07.md)** — Downloading and
-  rewriting CSS, fonts, images, scripts; `monolith` freeze; the offline
-  guarantee.
+  rewriting CSS, fonts, images, scripts; JS-based offlinization/linearization
+  via `vexy-dexyjs` (SingleFile, monolith, juice, etc.); the offline guarantee.
 - **[08 — Stage 2: Framework Classification](08.md)** — The fingerprint rules
-  engine (Webflow, MkDocs Material, Bubble, Docusaurus, Framer, generic); why we
-  don't use Wappalyzer.
+  engine (Webflow, MkDocs Material, Bubble, Docusaurus, Framer, generic) to
+  identify what kind of page is being processed.
 - **[09 — Stage 2: Viewport Pagination Analysis](09.md)** — Bounding-box probing
   at the target stage, semantic-snap break detection, over-tall block splitting.
 - **[10 — Stage 2: Optional Vision/LLM Analysis](10.md)** — MiniCPM-V via
   llama.cpp/Ollama, structured output, caching, the `--reasoning off` footgun;
   strictly opt-in.
-- **[11 — Stage 3: Importer Framework & Plugin API](11.md)** — The normalizer
-  ABC, detect/transform contract, entry-point discovery, layout vocabulary.
+- **[11 — Stage 3: Importer Framework & Plugin API](11.md)** — In-browser preprocessor
+  and normalizer contract using `vexy-dexyjs`; DOM transformation in page scope;
+  layout vocabulary.
 - **[12 — Stage 3: Webflow Importer](12.md)** — Porting the `webflow2reveal`
-  five-step transform; section selection, colour resolution, background
-  classification.
+  JS transform to `vexy-dexyjs`; section selection, colour resolution, background
+  luminance classification in the browser.
 - **[13 — Stage 3: MkDocs Material Importer](13.md)** — `md-content__inner`
-  extraction, heading-based splitting, chrome removal.
-- **[14 — Stage 3: Generic & Other Importers](14.md)** — trafilatura-backed
-  generic path; Bubble/Docusaurus/Framer rules; `clear-html` pre-pass.
+  extraction, heading-based splitting, chrome removal inside the preprocessor.
+- **[14 — Stage 3: Generic & Other Importers](14.md)** — JS-native generic path,
+  Bubble/Docusaurus/Framer DOM rules inside `vexy-dexyjs`.
 - **[15 — Stage 4: Pre-Exporters](15.md)** — Paged-media CSS injection, reveal
   wrapping, per-engine HTML preparation.
 - **[16 — Stage 5: Exporter Framework & Plugin API](16.md)** — The exporter ABC,
@@ -74,4 +77,4 @@ Grounding: see [`../RESEARCH.md`](../RESEARCH.md) for the tool decisions and
 - **[23 — Testing Strategy & Functional Examples](23.md)** — Unit/edge/error/
   integration/smoke tiers, the `examples/` runnable corpus, golden fixtures.
 - **[24 — Packaging, Dependencies & Roadmap](24.md)** — `pyproject.toml`, the
-  dependency table with licence hazards, MVP staging, future work.
+  dependency table with licence hazards, MVP staging, roadmap (including Chrome extension builds).

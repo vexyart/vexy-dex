@@ -10,9 +10,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from vexy_dex.model import Source
-from vexy_dex.orchestrator import build
-from vexy_dex.settings import build_settings
+from vexy_dexypy.model import Source
+from vexy_dexypy.orchestrator import build
+from vexy_dexypy.settings import build_settings
 
 FIXTURE = (
     Path(__file__).parent.parent

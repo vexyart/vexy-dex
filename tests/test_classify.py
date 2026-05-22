@@ -1,7 +1,7 @@
 # this_file: tests/test_classify.py
 from __future__ import annotations
 
-from vexy_dex.classify import classify
+from vexy_dexypy.classify import classify
 
 
 def test_classify_when_webflow_markers_then_webflow():

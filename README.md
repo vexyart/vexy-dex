@@ -1,19 +1,19 @@
 <!-- this_file: README.md -->
 
-# vexy-dex
+# vexy-dexypy
 
 **Turn any web page into slide decks — several at once — and keep the slides you
 like.**
 
-vexy-dex takes one URL, figures out where the slides hiding inside the page
+vexy-dexypy takes one URL, figures out where the slides hiding inside the page
 should break, and renders it to PDF through several engines in parallel. Each
 engine writes its own folder of single-page PDFs. You skim the folders and build
 your final deck from the best version of each slide: the hero from one engine,
 the text-heavy slides from another. No two engines paginate a page the same way,
 and that's the whole point — you get a menu, not a verdict.
 
-It runs offline after the first fetch, it's a single Python CLI, and it doesn't
-try to be a slide editor.
+It runs offline after the first fetch, it's a Python CLI, and it delegates DOM
+preprocessing to a companion JavaScript package `vexy-dexyjs` running in the browser.
 
 > Status: **specification complete, implementation starting.** This repo
 > currently holds the design — see [`spec/`](spec/00-tldr.md). The roadmap is in
@@ -23,12 +23,12 @@ try to be a slide editor.
 
 Web pages are infinite vertical scrolls; slides are fixed 16:9 rectangles.
 Forcing one into the other with a naive "print to PDF" cuts headings in half and
-orphans images. vexy-dex paginates *intelligently* — it renders the page at the
+orphans images. vexy-dexypy paginates *intelligently* — it renders the page at the
 real slide size, watches where the browser actually breaks content, and snaps
 slide boundaries to sections and headings instead of arbitrary pixel rows.
 
 Then it refuses to pick a winner. A Webflow hero looks best through Chromium; a
-documentation page looks best through a pure-CSS print engine. vexy-dex runs
+documentation page looks best through a pure-CSS print engine. vexy-dexypy runs
 them all and lets you choose.
 
 ## How it works
@@ -36,15 +36,22 @@ them all and lets you choose.
 A six-stage pipeline, orchestrated in Python, shelling out to browser and Node
 engines where they do the job better:
 
-1. **Read** — fetch the HTML and download every asset so it works offline.
+1. **Read** — fetch the HTML and localize assets so it works offline. Supports dynamic
+   fetching via standard Playwright, `playwrightauthor` (persistent sessions), or
+   `cloakbrowser` (stealth Chromium).
 2. **Analyze** — recognize the page (Webflow, MkDocs Material, …) and plan the
    slide breaks at your target aspect ratio.
-3. **Normalize** — restructure the DOM into clean, slide-shaped sections.
+3. **Normalize** — restructure the DOM into clean, slide-shaped sections inside the browser
+   using the companion JS package `vexy-dexyjs`.
 4. **Prepare** — inject the paged-media CSS / reveal.js wrapping each engine
    wants.
 5. **Render** — export to PDF through every chosen engine, in parallel.
 6. **Write** — split each PDF into named single-page slides, optionally as SVG,
    with an HTML preview to browse.
+
+The companion JavaScript package `vexy-dexyjs` (under `./vexy-dexyjs/`) can be deployed to NPM/CDNs
+and is also suitable for building Chrome extensions or external integrations. It handles in-browser
+DOM preprocessing and integrates the best "offlinization" / inlining tools.
 
 The full design is 24 chapters in [`spec/`](spec/00-tldr.md); the tool decisions
 and their rationale are in [`RESEARCH.md`](RESEARCH.md).
@@ -53,14 +60,14 @@ and their rationale are in [`RESEARCH.md`](RESEARCH.md).
 
 ```bash
 # Everything, every available strategy, default 16:9
-vexy-dex build https://www.vexy.art/lines/
+vexy-dexypy build https://www.vexy.art/lines/
 
 # Pick strategies and aspect ratio, also emit SVGs
-vexy-dex build https://blog.fontlab.com/ \
+vexy-dexypy build https://blog.fontlab.com/ \
     --strategies vivliostyle,playwright --aspect 4:3 --svg
 
 # Re-run a single stage on an existing PDF
-vexy-dex split out/lines/playwright/_combined.pdf --out out/lines/playwright --svg
+vexy-dexypy split out/lines/playwright/_combined.pdf --out out/lines/playwright --svg
 ```
 
 Output lands as:
@@ -78,17 +85,15 @@ worked, and tells you how to fix the one that didn't.
 
 ## What it recognizes
 
-- **Webflow** — absorbs and modernizes the
-  [`webflow2reveal`](https://github.com/twardoch/webflow2reveal) transform (now
-  first-class vexy-dex code, superseding that legacy tool): each section becomes
+- **Webflow** — preprocessed using `vexy-dexyjs` in the browser, which generalizes the
+  [`webflow2reveal`](https://github.com/twardoch/webflow2reveal) transform: each section becomes
   a slide, chrome is dropped, backgrounds are classified light/dark.
 - **MkDocs Material** — extracts the content column, splits by heading, keeps
   code blocks and tables intact.
-- **Everything else** — a generic path (via `trafilatura`) extracts the article
-  body and splits by `<h2>`. Bubble, Docusaurus, and Framer get light-touch
-  rules on top.
+- **Everything else** — a generic path extracts the article body and splits by `<h2>` or
+  breaks. Bubble, Docusaurus, and Framer get light-touch rules.
 
-New frameworks are plugins, not core changes.
+New frameworks are plugins in `vexy-dexyjs` / `vexy-dexypy`, not core changes.
 
 ## The engines
 
@@ -104,19 +109,18 @@ note, never a crash.
 
 ## Optional: smarter breaks with a local vision model
 
-For pages with no clean structure, vexy-dex can ask a small local
-vision-language model ([MiniCPM-V 4.6](https://huggingface.co/openbmb/MiniCPM-V-4.6-gguf),
-via Ollama or llama.cpp) to refine the slide breaks from a screenshot. It's
-strictly opt-in (`--vision`), cached, and never required — the deterministic
-plan always runs first.
+For pages with no clean structure, vexy-dexypy can ask a small local
+vision-language model (MiniCPM-V 4.6 via Ollama or llama.cpp) to refine the slide
+breaks from a screenshot. It's strictly opt-in (`--vision`), cached, and never
+required.
 
 ## Requirements (planned)
 
 - Python 3.12+, installed with `uv`.
 - Playwright Chromium (`playwright install chromium`).
-- Optional: Node (`@vivliostyle/cli`), `monolith`, poppler (for
-  SVG, pulled in by [`vexy-pdfsvgpy`](https://github.com/vexyart/vexy-pdfsvgpy)),
-  Prince, and Ollama/llama.cpp for vision.
+- Optional: `playwrightauthor` (locally cloned), `cloakbrowser`.
+- Optional: Node (for Vivliostyle CLI and `vexy-dexyjs` bundlers), `monolith`, poppler (for
+  SVG, pulled in by `vexy-pdfsvgpy`), Prince, and Ollama/llama.cpp for vision.
 
 ## Project layout
 
@@ -127,6 +131,7 @@ RESEARCH.md     # synthesized conclusions and tool decisions
 IDEA.md         # the original concept, kept in sync
 TODO.md         # actionable task list, linked to spec chapters
 CLAUDE.md       # guidance for AI coding agents / contributors
+vexy-dexyjs/    # the browser preprocessor javascript package
 ```
 
 ## Contributing
@@ -140,4 +145,4 @@ function gets one.
 
 See [`LICENSE`](LICENSE). Note the dependency licence hazards documented in
 [spec/24](spec/24.md) (Vivliostyle and PyMuPDF are AGPL; Prince is proprietary)
-— vexy-dex shells out to AGPL engines rather than linking them.
+— vexy-dexypy shells out to AGPL engines rather than linking them.

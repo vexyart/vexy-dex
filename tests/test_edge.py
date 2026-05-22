@@ -5,13 +5,13 @@ from __future__ import annotations
 
 import pytest
 
-from vexy_dex import dom
-from vexy_dex.errors import ReadError
-from vexy_dex.importers.generic import GenericImporter
-from vexy_dex.importers.others import BubbleImporter, DocusaurusImporter
-from vexy_dex.model import PageDoc, SlidePlan, Source
-from vexy_dex.readers.static import StaticReader
-from vexy_dex.settings import build_settings
+from vexy_dexypy import dom
+from vexy_dexypy.errors import ReadError
+from vexy_dexypy.importers.generic import GenericImporter
+from vexy_dexypy.importers.others import BubbleImporter, DocusaurusImporter
+from vexy_dexypy.model import PageDoc, SlidePlan, Source
+from vexy_dexypy.readers.static import StaticReader
+from vexy_dexypy.settings import build_settings
 
 PLAN = SlidePlan(1920, 1080)
 
@@ -30,13 +30,13 @@ def test_empty_page_yields_one_slide(tmp_path):
     out = GenericImporter().transform(
         _page(tmp_path, "<html><body></body></html>"), PLAN
     )
-    assert dom.already_reveal(out.html_path.read_text())
+    assert dom.already_neutral(out.html_path.read_text())
 
 
 def test_malformed_html_does_not_crash(tmp_path):
     bad = "<html><body><h1>unclosed<section><p>x</body>"
     out = GenericImporter().transform(_page(tmp_path, bad), PLAN)
-    assert "reveal" in out.html_path.read_text()
+    assert dom.already_neutral(out.html_path.read_text())
 
 
 def test_no_headings_single_slide(tmp_path):
@@ -69,7 +69,4 @@ def test_bubble_relaxes_absolute_positioning(tmp_path):
         "<h1>Hi</h1></div></body>"
     )
     out = BubbleImporter().transform(_page(tmp_path, html), PLAN)
-    assert (
-        "position: relative" in out.html_path.read_text().lower()
-        or "reveal" in out.html_path.read_text()
-    )
+    assert "position: relative" in out.html_path.read_text().lower()

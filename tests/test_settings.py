@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-from vexy_dex.errors import UsageError
-from vexy_dex.settings import parse_size, resolve_stage
+from vexy_dexypy.errors import UsageError
+from vexy_dexypy.settings import parse_size, resolve_stage
 
 
 def test_default_stage_is_1920x1080():

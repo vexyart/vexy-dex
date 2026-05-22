@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from bs4 import BeautifulSoup
 
-from vexy_dex.readers.localize import _fetch_one, _localize_css, _safe_name
+from vexy_dexypy.readers.localize import _fetch_one, _localize_css, _safe_name
 
 
 class _Resp:

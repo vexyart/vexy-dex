@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import pytest
 
-from vexy_dex.model import Source
-from vexy_dex.orchestrator import build, render_one
-from vexy_dex.settings import build_settings
+from vexy_dexypy.model import Source
+from vexy_dexypy.orchestrator import build, render_one
+from vexy_dexypy.settings import build_settings
 
 
 def _playwright_ok() -> bool:
@@ -46,7 +46,7 @@ def test_failed_strategy_isolated(tmp_path, fixtures, monkeypatch):
     """A raising exporter yields a failed DeckResult, not an aborted run."""
     src = Source.parse(str(fixtures / "generic_article" / "index.html"))
     settings = build_settings(out=str(tmp_path), strategies="reveal")
-    import vexy_dex.exporters.reveal as rv
+    import vexy_dexypy.exporters.reveal as rv
 
     def boom(self, job, out):
         raise RuntimeError("kaboom")

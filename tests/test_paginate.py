@@ -1,7 +1,7 @@
 # this_file: tests/test_paginate.py
 from __future__ import annotations
 
-from vexy_dex.paginate import plan_breaks
+from vexy_dexypy.paginate import plan_breaks
 
 
 def _el(tag, top, height, visible=True):

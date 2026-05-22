@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import pytest
 
-from vexy_dex.model import Source
-from vexy_dex.orchestrator import build
-from vexy_dex.settings import build_settings
+from vexy_dexypy.model import Source
+from vexy_dexypy.orchestrator import build
+from vexy_dexypy.settings import build_settings
 
 
 def _playwright_ok() -> bool:

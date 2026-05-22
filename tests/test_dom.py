@@ -1,7 +1,7 @@
 # this_file: tests/test_dom.py
 from __future__ import annotations
 
-from vexy_dex import dom
+from vexy_dexypy import dom
 
 
 def test_luminance_white_is_light_black_is_dark():

@@ -3,10 +3,11 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from vexy_dex.importers.generic import GenericImporter
-from vexy_dex.importers.mkdocs import MkdocsImporter
-from vexy_dex.importers.webflow import WebflowImporter
-from vexy_dex.model import PageDoc, SlidePlan, Source
+from vexy_dexypy import dom
+from vexy_dexypy.importers.generic import GenericImporter
+from vexy_dexypy.importers.mkdocs import MkdocsImporter
+from vexy_dexypy.importers.webflow import WebflowImporter
+from vexy_dexypy.model import PageDoc, SlidePlan, Source
 
 
 def _page(tmp_path, fixture_html: str) -> PageDoc:
@@ -26,7 +27,7 @@ def test_webflow_selects_sections_drops_chrome(tmp_path, fixtures):
     page = _page(tmp_path, html)
     out = WebflowImporter().transform(page, PLAN)
     result = out.html_path.read_text()
-    assert "reveal" in result and "slides" in result
+    assert dom.already_neutral(result)
     assert "navigation chrome" not in result, "nav section should be dropped"
     assert "footer chrome" not in result, "footer section should be dropped"
     assert "Hero Headline" in result
@@ -44,7 +45,7 @@ def test_webflow_divsection_page_uses_plan_fallback(tmp_path):
         f'<nav class="w-nav">chrome</nav>{blocks}'
         '<footer class="footer">chrome</footer></div></body></html>'
     )
-    from vexy_dex.model import Break
+    from vexy_dexypy.model import Break
 
     # A 6-slide plan exercises the block-distribution fallback target.
     plan = SlidePlan(
@@ -79,4 +80,4 @@ def test_importer_idempotent_on_canonical_input(tmp_path):
     # feed the normalized output back in
     again = replace(once, html_path=out1.html_path)
     out2 = GenericImporter().transform(again, PLAN)
-    assert out2.html_path == again.html_path, "already-reveal input is a no-op"
+    assert out2.html_path == again.html_path, "already-neutral input is a no-op"

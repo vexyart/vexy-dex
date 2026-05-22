@@ -1,6 +1,6 @@
 <!-- this_file: CLAUDE.md -->
 
-# CLAUDE.md — guidance for coding agents working on vexy-dex
+# CLAUDE.md — guidance for coding agents working on vexy-dexypy
 
 This file orients an AI coding agent (or any new contributor) to the project.
 Read it, then read [`spec/00-tldr.md`](spec/00-tldr.md) and
@@ -8,7 +8,7 @@ Read it, then read [`spec/00-tldr.md`](spec/00-tldr.md) and
 
 ## What this project is
 
-vexy-dex is an offline-first Python CLI that converts an HTML page into slide
+vexy-dexypy is an offline-first Python CLI that converts an HTML page into slide
 decks. One URL in; several folders out, one per rendering strategy, each holding
 named single-page PDFs (and optional SVGs). The user assembles a final deck by
 picking the best rendering of each slide across strategies. The divergence
@@ -39,7 +39,7 @@ one stage reach into another's internals.
 ## Where things live
 
 ```
-src/vexy_dex/
+src/vexy_dexypy/
   __main__.py cli.py settings.py model.py orchestrator.py dom.py
   classify.py paginate.py vision.py preexport.py writers.py
   readers/ importers/ exporters/ assets/
@@ -63,8 +63,8 @@ Full layout and `pyproject.toml` in [spec/24](spec/24.md).
 - **Split:** `pypdf` (default) / `pikepdf` (damaged). **Avoid PyMuPDF** unless the
   project goes AGPL/commercial. **SVG:** delegate to `vexy-pdfsvgpy`.
 - **Webflow importer:** copy & adapt `webflow2reveal/py/src/webflow2reveal/compiler.py`
-  into vexy-dex (author's own legacy code, no licence concern, not a dependency).
-  vexy-dex supersedes and ultimately retires `webflow2reveal`.
+  into vexy-dexypy (author's own legacy code, no licence concern, not a dependency).
+  vexy-dexypy supersedes and ultimately retires `webflow2reveal`.
 - **Plugins:** `importlib.metadata` entry points for readers/importers/exporters/
   writers; each exposes a `detect`/`available` confidence.
 
@@ -90,7 +90,7 @@ Rationale for every choice is in [RESEARCH.md](RESEARCH.md).
   backoff helper), no class named `Manager`/`Handler`/`System`/`Framework`.
   Functions < ~20 lines, files < ~200 lines, < 3 indent levels where practical.
 - **Build vs buy.** Reuse maintained packages; write custom code only for the
-  glue and the genuinely vexy-dex-specific pagination logic ([spec/09](spec/09.md)).
+  glue and the genuinely vexy-dexypy-specific pagination logic ([spec/09](spec/09.md)).
 - **`this_file` header** near the top of every source file (path relative to repo
   root). Markdown uses an HTML comment; Python uses a comment after any shebang.
 

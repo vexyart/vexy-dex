@@ -98,4 +98,4 @@ The full six-stage pipeline, implemented and tested end-to-end.
 ### Notes
 
 - Webflow logic copied & adapted from the author's legacy `webflow2reveal`
-  (now first-class vexy-dex code; the package is slated for removal).
+  (now first-class vexy-dexypy code; the package is slated for removal).

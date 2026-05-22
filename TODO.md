@@ -1,19 +1,20 @@
 <!-- this_file: TODO.md -->
 
-# vexy-dex — TODO
+# vexy-dexypy — TODO
 
-We have committed the changes so far into https://github.com/vexyart/vexy-dex 
+We have committed the changes so far into https://github.com/vexyart/vexy-dexypy
 
 Actionable, flat task list derived from [`spec/`](spec/00-tldr.md). Each item
 links the chapter that specifies it. Order roughly follows the MVP staging in
-[spec/24](spec/24.md). `[x]` = done, `[~]` = partial. Mirror detail in `WORK.md`.
+[spec/24](spec/24.md). `[x]` = done, `[/]` = in progress, `[ ]` = todo.
 
 ## Stage 0 — Project setup
 
-- [x] Init `uv` project, Python 3.12, `src/vexy_dex/` layout ([spec/24](spec/24.md))
+- [x] Init `uv` project, Python 3.12, `src/vexy_dexypy/` layout ([spec/24](spec/24.md))
 - [x] Add core deps: httpx, bs4, lxml, selectolax, pypdf, fire, loguru, rich, anyio; heavy engines (playwright, weasyprint, trafilatura, pikepdf) as extras ([spec/24](spec/24.md))
 - [x] `playwright install chromium`; document Node/monolith/poppler externals ([spec/24](spec/24.md))
-- [x] `hatch-vcs` versioning; `vexy-dex` script entry point ([spec/24](spec/24.md))
+- [x] Support local clone of `playwrightauthor` under `./private/playwrightauthor/` and integrate `cloakbrowser` dependency ([spec/06](spec/06.md))
+- [x] `hatch-vcs` versioning; `vexy-dexypy` script entry point ([spec/24](spec/24.md))
 - [x] Create `DEPENDENCIES.md` with the licence-hazard table ([spec/24](spec/24.md))
 
 ## Data model & config
@@ -28,59 +29,59 @@ links the chapter that specifies it. Order roughly follows the MVP staging in
 
 - [x] `VexyDex` class with `build`, `read`, `analyze`, `render`, `split` ([spec/04](spec/04.md))
 - [x] Flags: `--out --aspect --size --strategies --svg --vision --verbose --no-cache` ([spec/04](spec/04.md))
+- [x] Add flags for browser engine selection: `--browser-engine` (playwright | playwrightauthor | cloakbrowser) ([spec/04](spec/04.md))
 - [x] Exit codes 0/1/2 + per-strategy summary table ([spec/04](spec/04.md), [spec/22](spec/22.md))
 - [x] `--help` lists runtime-discovered (un)available strategies + documents the `--` caveat ([spec/04](spec/04.md))
 
-## Stage 1 — Readers
+## Stage 1 — Readers & Browsers
 
-- [x] Reader ABC + `vexy_dex.readers` entry-point discovery ([spec/06](spec/06.md))
+- [x] Reader ABC + `vexy_dexypy.readers` entry-point discovery ([spec/06](spec/06.md))
 - [x] Static reader (`httpx[http2]`, redirects, timeout) ([spec/06](spec/06.md))
-- [x] Dynamic reader (Playwright, `networkidle`, hydrated `content()`) ([spec/06](spec/06.md))
+- [x] Dynamic reader choices:
+  - [x] Standard `playwright` driver ([spec/06](spec/06.md))
+  - [x] `playwrightauthor` driver (persistent, logged-in sessions via Chrome for Testing) ([spec/06](spec/06.md))
+  - [x] `cloakbrowser` driver (stealth-patched Chromium to bypass anti-bot challenges) ([spec/06](spec/06.md))
 - [x] Local-file / `file://` handling ([spec/06](spec/06.md))
 - [x] Static→dynamic escalation heuristic ([spec/06](spec/06.md))
 - [x] `ReadError` with URL/status; one retry w/ backoff+jitter ([spec/06](spec/06.md), [spec/22](spec/22.md))
 
-## Stage 1 — Asset localization
+## Stage 1 — Asset Localization & Offlinization
 
 - [x] Tier 1: `ThreadPoolExecutor` tag-asset downloader + path rewrite ([spec/07](spec/07.md))
 - [ ] Tier 2: `pywebcopy` static mirror integration ([spec/07](spec/07.md))
-- [ ] Tier 3: `monolith` freeze (Chromium dump-dom | monolith) ([spec/07](spec/07.md))
+- [ ] Tier 3: JS-based offlinization inside `vexy-dexyjs` (delegated from Python):
+  - [ ] Support `single-file-cli` integration ([spec/07](spec/07.md))
+  - [ ] Support `monolith` (Rust / npm wrapper) inlining ([spec/07](spec/07.md))
+  - [ ] Support CSS inliners (`juice`, `css-inline`, `inline-css`) for linearizing and inlining styles ([spec/07](spec/07.md))
 - [x] CSS `url()`/`@import` localization (bounded recursion; fonts/bg images) ([spec/07](spec/07.md))
 - [x] Path sanitation (hash long names, no traversal, stay under out/) ([spec/07](spec/07.md))
 - [x] Compute `PageDoc.content_hash` over html + asset manifest ([spec/07](spec/07.md), [spec/21](spec/21.md))
 
-## Stage 2 — Classification
+## Stage 2 — Classification & Pagination
 
 - [x] Fingerprint rules engine: webflow, mkdocs-material, docusaurus, framer, bubble, generic ([spec/08](spec/08.md))
 - [x] Confidence scoring + tie-break to generic; log matches ([spec/08](spec/08.md))
 - [x] Strategy-order recommendation per framework ([spec/08](spec/08.md), [spec/05](spec/05.md))
-
-## Stage 2 — Pagination
-
 - [x] Playwright bounding-box probe JS at stage size ([spec/09](spec/09.md))
 - [x] `plan_breaks`: semantic-snap, overflow, giant-split, tolerance ([spec/09](spec/09.md))
 - [x] Dedupe/sort breaks; screen-count fallback for div-soup ([spec/09](spec/09.md))
 - [x] Golden `SlidePlan` snapshot regression test ([spec/23](spec/23.md))
-
-## Stage 2 — Vision (optional)
-
 - [x] `vision.py`: screenshot → MiniCPM-V via Ollama/llama.cpp HTTP ([spec/10](spec/10.md))
 - [x] Structured break output (JSON-validated); reject prose ([spec/10](spec/10.md))
-- [x] `--reasoning off` footgun documented in code + DEPENDENCIES ([spec/10](spec/10.md))
 - [x] Merge vision breaks onto heuristic plan (heuristic is floor) ([spec/10](spec/10.md))
 - [x] Cache by screenshot-hash + model; graceful fallback if server down ([spec/10](spec/10.md), [spec/21](spec/21.md))
 
-## Stage 3 — Importers
+## Stage 3 — vexy-dexyjs (In-Browser Importers & Preprocessors)
 
-- [x] Importer ABC + `vexy_dex.importers` discovery ([spec/11](spec/11.md))
-- [x] `vexy_dex.dom` helpers: `wrap_reveal`, `split_by_heading`, `drop_chrome`, `luminance` ([spec/11](spec/11.md))
-- [x] Canonical layout vocabulary classes ([spec/11](spec/11.md))
-- [x] Webflow importer — adapted from `webflow2reveal/.../compiler.py` (section select, chrome drop, luminance bg, reveal wrap) ([spec/12](spec/12.md))
-- [ ] After parity: retire the legacy `webflow2reveal` package ([spec/12](spec/12.md), [spec/24](spec/24.md))
-- [x] MkDocs Material importer — `md-content__inner`, heading split, chrome drop, preserve code/tables ([spec/13](spec/13.md))
-- [x] Generic importer — trafilatura extract + h2 split ([spec/14](spec/14.md))
-- [x] Bubble / Docusaurus / Framer light rule sets ([spec/14](spec/14.md))
-- [x] Idempotency: re-running transform is a no-op on canonical input ([spec/11](spec/11.md))
+- [x] Initialize companion package `./vexy-dexyjs/` as an NPM package ([spec/11](spec/11.md))
+- [x] Port and generalize Webflow compiler logic from `private/webflow2reveal/js/` into `vexy-dexyjs` ([spec/12](spec/12.md))
+- [x] Write generalized page preprocessing/normalizer in `vexy-dexyjs` (smarter version of `webflow2revealjs` that works on ANY page) ([spec/11](spec/11.md))
+- [x] Implement browser injection bridge in `vexy_dexypy` to load and run `vexy-dexyjs` inside Playwright/playwrightauthor/cloakbrowser context ([spec/11](spec/11.md))
+- [x] Integrate offlinization options (e.g. `single-file-cli`, `monolith`, `juice`) inside `vexy-dexyjs` ([spec/07](spec/07.md))
+- [x] Implement MkDocs Material preprocessing rules in `vexy-dexyjs` ([spec/13](spec/13.md))
+- [x] Implement generic, Docusaurus, Framer, and Bubble DOM preprocessing rules in `vexy-dexyjs` ([spec/14](spec/14.md))
+- [x] Make `vexy-dexyjs` packageable as a Chrome extension ([spec/11](spec/11.md))
+- [x] Retain idempotency: re-running transform is a no-op on canonical input ([spec/11](spec/11.md))
 
 ## Stage 4 — Pre-exporters
 
@@ -97,13 +98,13 @@ the IR; this makes the five strategies differ only by PDF engine. Decouple so
 the chassis is a per-strategy stage-4 choice and genuine framework divergence
 becomes possible ([spec/11](spec/11.md), [spec/15](spec/15.md), [spec/16](spec/16.md)).
 
-- [ ] Make the normalized IR framework-neutral: importers emit a flat `<section class="slide">` list, **not** `.reveal > .slides` ([spec/11](spec/11.md))
-- [ ] Move reveal wrapping out of importers into a `reveal` chassis in the pre-exporter; `dom.wrap_reveal` becomes the chassis helper ([spec/15](spec/15.md))
-- [ ] Add a `paged` chassis (neutral sections + `@page`/break CSS) as the default for weasyprint/vivliostyle/prince/playwright ([spec/15](spec/15.md))
-- [ ] Add `chassis` field to `Strategy`; map each strategy to its chassis ([spec/03](spec/03.md), [spec/16](spec/16.md))
-- [ ] `impress` chassis: wrap neutral slides in `#impress > .step`, bundle impress.js (localized), drive via DeckTape `impress` key, chrome off ([spec/15](spec/15.md), [spec/19](spec/19.md))
-- [ ] `marp` chassis + `marp-cli` exporter: sections → Markdown deck → native PDF ([spec/16](spec/16.md), [spec/19](spec/19.md))
-- [ ] Tests: one neutral IR fixture rendered through ≥2 chassis yields visibly different decks (the divergence guarantee) ([spec/23](spec/23.md))
+- [x] Make the normalized IR framework-neutral: importers emit a flat `<section class="slide">` list, **not** `.reveal > .slides` ([spec/11](spec/11.md))
+- [x] Move reveal wrapping out of importers into a `reveal` chassis in the pre-exporter; `dom.wrap_reveal` becomes the chassis helper ([spec/15](spec/15.md))
+- [x] Add a `paged` chassis (neutral sections + `@page`/break CSS) as the default for weasyprint/vivliostyle/prince/playwright ([spec/15](spec/15.md))
+- [x] Add `chassis` field to `Strategy`; map each strategy to its chassis ([spec/03](spec/03.md), [spec/16](spec/16.md))
+- [x] `impress` chassis: wrap neutral slides in `#impress > .step`, bundle impress.js (localized), drive via DeckTape `impress` key, chrome off ([spec/15](spec/15.md), [spec/19](spec/19.md))
+- [x] `marp` chassis + `marp-cli` exporter: sections → Markdown deck → native PDF ([spec/16](spec/16.md), [spec/19](spec/19.md))
+- [x] Tests: one neutral IR fixture rendered through ≥2 chassis yields visibly different decks (the divergence guarantee) ([spec/23](spec/23.md))
 
 ## Stage 5 — Exporters
 

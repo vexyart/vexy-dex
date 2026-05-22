@@ -5,7 +5,7 @@
 Input : https://www.vexy.art/lines/case-retro-poster/  (a Webflow page)
 Output: examples/output/retro-poster/<strategy>/NN-slide.pdf  (+ index.html)
 
-This is the canonical Webflow example. vexy-dex fetches the live page, localizes
+This is the canonical Webflow example. vexy-dexypy fetches the live page, localizes
 its assets for offline rendering, classifies it as Webflow, plans slide breaks
 by probing the rendered layout at 1920x1080, normalizes each `<section>` into a
 slide, then renders through two engines in parallel:
@@ -26,9 +26,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from vexy_dex.model import Source
-from vexy_dex.orchestrator import build
-from vexy_dex.settings import build_settings
+from vexy_dexypy.model import Source
+from vexy_dexypy.orchestrator import build
+from vexy_dexypy.settings import build_settings
 
 URL = "https://vexy-art.webflow.io/lines/case-retro-poster"
 OUT = Path(__file__).parent / "output" / "retro-poster"

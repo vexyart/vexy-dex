@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 
-from vexy_dex import preexport
-from vexy_dex.model import PageDoc, SlidePlan, Source, Strategy
+from vexy_dexypy import preexport
+from vexy_dexypy.model import PageDoc, SlidePlan, Source, Strategy
 
 
 def _page(tmp_path) -> PageDoc:
@@ -26,7 +26,7 @@ def _page(tmp_path) -> PageDoc:
 
 def test_paged_strategy_injects_page_css(tmp_path):
     job = preexport.prepare(
-        _page(tmp_path), SlidePlan(1920, 1080), Strategy("vivliostyle", "vivliostyle")
+        _page(tmp_path), SlidePlan(1920, 1080), Strategy("vivliostyle", "vivliostyle", chassis="paged")
     )
     text = job.html_path.read_text()
     assert "@page" in text and "1920px 1080px" in text

@@ -1,6 +1,6 @@
 <!-- this_file: RESEARCH.md -->
 
-# vexy-dex — Research Conclusions & Recommendations
+# vexy-dexypy — Research Conclusions & Recommendations
 
 This file distills the seven research reports in `research/` (qwen, grok, dsk,
 cla, pplx, gemi, gpt1) into a single set of decisions. Where the reports
@@ -84,12 +84,12 @@ converge without coordination, treat it as a strong prior.
 
 - **Webflow:** copy and adapt the five-step transform from
   `private/webflow2reveal/py/src/webflow2reveal/compiler.py` (one ~31 KB module,
-  the author's own legacy code) directly into vexy-dex — not as a dependency:
+  the author's own legacy code) directly into vexy-dexypy — not as a dependency:
   resolve colours → select `<section>` slides (drop nav/footer/menu/banner) →
   rewrite into a small layout vocabulary (`slide-split-layout`, `slide-column`,
   `slide-image-cover`, …) → classify backgrounds by perceptual luminance →
-  inject Reveal.js 5.1, generalized to vexy-dex's configurable stage and shared
-  IR. vexy-dex supersedes `webflow2reveal`; the old package is then retired.
+  inject Reveal.js 5.1, generalized to vexy-dexypy's configurable stage and shared
+  IR. vexy-dexypy supersedes `webflow2reveal`; the old package is then retired.
 - **MkDocs Material:** keep `article.md-content__inner`; split by `<h2>` (then
   `<h3>` if a section overflows); drop `md-sidebar/header/footer/search/nav`.
 - **HTML cleaning before paged engines:** `clear-html` flattens div-soup that
@@ -138,7 +138,7 @@ Ship four engines; each is a plugin implementing one ABC.
 ## Cross-cutting decisions
 
 - **CLI:** Fire (Apache-2.0). Caveat: flags after positionals need `--`.
-- **Plugins:** `importlib.metadata` entry-point groups `vexy_dex.readers`,
+- **Plugins:** `importlib.metadata` entry-point groups `vexy_dexypy.readers`,
   `.importers`, `.exporters`, `.writers`. Each implements a tiny ABC with a
   `detect(html) -> float` confidence score.
 - **Concurrency:** `anyio` over raw asyncio; cap the Chromium pool with a
@@ -154,7 +154,7 @@ Ship four engines; each is a plugin implementing one ABC.
 - Surya — GPL-3.0, commercial licence for self-host (research only).
 - Prince — proprietary (opt-in).
 - `webflow2reveal` — **not a dependency.** Its `compiler.py` is copied/adapted
-  into vexy-dex (author's own code, no constraint); the legacy package is
+  into vexy-dexypy (author's own code, no constraint); the legacy package is
   retired once the Webflow importer reaches parity.
 
 ## MVP staging (synthesized from cla + dsk roadmaps)
