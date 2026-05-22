@@ -1,0 +1,49 @@
+# this_file: src/vexy_dex/exporters/playwright.py
+"""Playwright exporter — Chromium page.pdf at a locked stage size (spec/17)."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from ..errors import ExportError
+from ..model import RenderJob
+
+
+class PlaywrightExporter:
+    name = "playwright"
+    needs_js = True
+    supports_paged_media = False
+
+    def available(self) -> bool:
+        try:
+            import playwright.sync_api  # noqa: F401
+
+            return True
+        except Exception:
+            return False
+
+    def export(self, job: RenderJob, out: Path) -> Path:
+        try:
+            from playwright.sync_api import sync_playwright
+        except Exception as e:  # pragma: no cover
+            raise ExportError(f"playwright not installed: {e}") from e
+        w, h = job.plan.stage_w, job.plan.stage_h
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch()
+                page = browser.new_page(viewport={"width": w, "height": h})
+                page.goto(job.html_path.resolve().as_uri(), wait_until="networkidle")
+                for css in job.extra_css:
+                    page.add_style_tag(path=str(css))
+                page.emulate_media(media="screen")
+                page.pdf(
+                    path=str(out),
+                    width=f"{w}px",
+                    height=f"{h}px",
+                    print_background=True,
+                    prefer_css_page_size=True,
+                )
+                browser.close()
+        except Exception as e:
+            raise ExportError(f"playwright export failed: {e}") from e
+        return out

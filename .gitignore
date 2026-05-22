@@ -51,6 +51,8 @@ __version__.py
 *.spec
 *$py.class
 /site
+/out/
+out/
 activemq-data/
 build/
 celerybeat-schedule
