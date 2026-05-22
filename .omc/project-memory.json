@@ -1,0 +1,68 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1779466949610,
+  "projectRoot": "/Users/adam/Developer/vcs3/github.vexyart/vexy-dex",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "issues": {
+      "path": "issues",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1779466949604,
+      "keyFiles": [
+        "101.md",
+        "102.md"
+      ]
+    },
+    "private": {
+      "path": "private",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1779466949605,
+      "keyFiles": []
+    },
+    "research": {
+      "path": "research",
+      "purpose": null,
+      "fileCount": 7,
+      "lastAccessed": 1779466949605,
+      "keyFiles": [
+        "01-qwen.md",
+        "02-grok.md",
+        "03-dsk.md",
+        "04-cla.md",
+        "05-pplx.md"
+      ]
+    }
+  },
+  "hotPaths": [],
+  "userDirectives": []
+}
