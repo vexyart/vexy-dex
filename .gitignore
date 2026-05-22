@@ -53,6 +53,7 @@ __version__.py
 /site
 /out/
 out/
+examples/output/
 activemq-data/
 build/
 celerybeat-schedule
