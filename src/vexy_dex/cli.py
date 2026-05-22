@@ -81,6 +81,14 @@ class VexyDex:
                       f"{[round(b.y) for b in plan.breaks]}")
         return plan.slide_count
 
+    def render(self, slug: str, strategy: str, out: str = "out",
+               svg: bool = False, verbose: bool = False) -> int:
+        """Stages 4-6 for one strategy from existing sidecars (re-run)."""
+        _setup_logging(verbose)
+        settings = build_settings(out=out, strategies=strategy, svg=svg, verbose=verbose)
+        result = orchestrator.render_one(slug, strategy, settings)
+        return _summary([result])
+
     def split(self, pdf: str, out: str = ".", svg: bool = False,
               prefix: str = "slide", verbose: bool = False) -> int:
         """Stage 6 only: split a PDF into named per-slide files."""

@@ -26,8 +26,7 @@ links the chapter that specifies it. Order roughly follows the MVP staging in
 
 ## CLI (Fire)
 
-- [x] `VexyDex` class with `build`, `read`, `analyze`, `split` ([spec/04](spec/04.md))
-- [ ] `render` single-stage verb (re-run one strategy from a sidecar) ([spec/04](spec/04.md))
+- [x] `VexyDex` class with `build`, `read`, `analyze`, `render`, `split` ([spec/04](spec/04.md))
 - [x] Flags: `--out --aspect --size --strategies --svg --vision --verbose --no-cache` ([spec/04](spec/04.md))
 - [x] Exit codes 0/1/2 + per-strategy summary table ([spec/04](spec/04.md), [spec/22](spec/22.md))
 - [~] `--help` (Fire-generated); document the `--` caveat; list discovered strategies ([spec/04](spec/04.md))
@@ -114,9 +113,9 @@ links the chapter that specifies it. Order roughly follows the MVP staging in
 ## Orchestration & cross-cutting
 
 - [x] Orchestrator fan-out: stages 1–3 once, 4–6 per strategy ([spec/21](spec/21.md))
-- [ ] `anyio` task group; `CapacityLimiter` for Chromium pool (currently sequential) ([spec/21](spec/21.md))
+- [x] `anyio` task group; `CapacityLimiter` for browser-class exporters ([spec/21](spec/21.md))
 - [ ] Warm browser/context reuse across probe + Playwright export ([spec/21](spec/21.md))
-- [ ] Content-addressed cache (page, plan, render) honouring `--no-cache` ([spec/21](spec/21.md))
+- [x] Content-addressed render cache honouring `--no-cache` ([spec/21](spec/21.md))
 - [x] Typed error taxonomy + partial-failure summary ([spec/22](spec/22.md))
 - [x] `loguru` logging; `--verbose` DEBUG ([spec/22](spec/22.md))
 

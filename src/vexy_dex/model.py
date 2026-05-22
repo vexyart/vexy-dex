@@ -63,6 +63,18 @@ class PageDoc:
         d["asset_dir"] = str(self.asset_dir)
         return d
 
+    @classmethod
+    def from_dict(cls, d: dict) -> PageDoc:
+        src = d["source"]
+        return cls(
+            source=Source(raw=src["raw"], kind=SourceKind(src["kind"]), slug=src["slug"]),
+            html_path=Path(d["html_path"]),
+            asset_dir=Path(d["asset_dir"]),
+            framework=d.get("framework", "generic"),
+            meta=d.get("meta", {}),
+            content_hash=d.get("content_hash", ""),
+        )
+
 
 @dataclass(frozen=True)
 class Break:
