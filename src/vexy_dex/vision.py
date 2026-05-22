@@ -20,13 +20,15 @@ from .settings import Settings
 def _screenshot(page: PageDoc, settings: Settings):
     from playwright.sync_api import sync_playwright
 
+    from ._browser import serving
+
     with sync_playwright() as p:
         browser = p.chromium.launch()
         pg = browser.new_context(
             viewport={"width": settings.stage_w, "height": settings.stage_h}
         ).new_page()
-        pg.goto(page.html_path.resolve().as_uri(), wait_until="networkidle")
-        png = pg.screenshot(full_page=True)
+        with serving(pg, page.html_path):
+            png = pg.screenshot(full_page=True)
         browser.close()
     return png
 

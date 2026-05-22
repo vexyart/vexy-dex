@@ -29,6 +29,7 @@ _THEME_CSS = """\
 .slide-dark-bg { background: #111; color: #f5f5f5; }
 .slide img { max-width: 100%; height: auto; }
 .slide-image-cover img { width: 100%; height: 100%; object-fit: cover; }
+.w-webflow-badge { display: none !important; }  /* "Made in Webflow" badge */
 """
 
 

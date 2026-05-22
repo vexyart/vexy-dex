@@ -28,7 +28,9 @@ _PROBE_JS = """
 _SEMANTIC = ("h1", "h2", "section", "article")
 
 
-def plan_breaks(elements: list[dict], stage_w: int, stage_h: int, tol: float = 50.0) -> SlidePlan:
+def plan_breaks(
+    elements: list[dict], stage_w: int, stage_h: int, tol: float = 50.0
+) -> SlidePlan:
     """Decide slide-start offsets from measured element geometry (spec/09)."""
     els = sorted((e for e in elements if e.get("visible")), key=lambda e: e["top"])
     breaks: list[Break] = []
@@ -59,9 +61,11 @@ def _probe_playwright(page: PageDoc, stage_w: int, stage_h: int) -> list[dict] |
             pg = browser.new_context(
                 viewport={"width": stage_w, "height": stage_h}
             ).new_page()
-            pg.goto(page.html_path.resolve().as_uri(), wait_until="networkidle")
-            pg.emulate_media(media="screen")
-            elements = pg.evaluate(_PROBE_JS)
+            from ._browser import serving
+
+            with serving(pg, page.html_path):
+                pg.emulate_media(media="screen")
+                elements = pg.evaluate(_PROBE_JS)
             browser.close()
         return elements
     except Exception as e:  # rendering failed; caller falls back

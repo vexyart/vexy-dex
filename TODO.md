@@ -111,11 +111,10 @@ becomes possible ([spec/11](spec/11.md), [spec/15](spec/15.md), [spec/16](spec/1
 - [x] Capability-aware dispatch (user `--strategies` authoritative) ([spec/16](spec/16.md))
 - [x] Subprocess discipline: timeouts, captured stderr, file paths ([spec/16](spec/16.md))
 - [x] Playwright exporter (`page.pdf`, `prefer_css_page_size`, screen media) ([spec/17](spec/17.md))
-- [x] WeasyPrint exporter ([spec/18](spec/18.md))
 - [x] Vivliostyle exporter (shell out; AGPL boundary) ([spec/18](spec/18.md))
 - [x] Prince exporter (opt-in, path-gated) ([spec/18](spec/18.md))
-- [x] DeckTape exporter ([spec/19](spec/19.md))
-- [x] DeckTape throwaway local HTTP server for asset-relative reveal decks ([spec/19](spec/19.md))
+- [x] Native `reveal` exporter — Playwright drives reveal.js, `page.pdf` per slide, `pypdf` merges; no Node/decktape dependency ([spec/19](spec/19.md))
+- [x] Harden browser navigation: serve local decks over a loopback HTTP server (real origin, avoids file:// CORS/SRI/font quirks) and wait for `load` not `networkidle` (which hangs when offline JS retries 4xx/5xx assets); shared `_browser.serving` used by playwright/reveal/vision/probe ([spec/17](spec/17.md), [spec/09](spec/09.md), [spec/19](spec/19.md))
 
 ## Stage 6 — Writers
 

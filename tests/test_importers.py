@@ -47,7 +47,9 @@ def test_webflow_divsection_page_uses_plan_fallback(tmp_path):
     from vexy_dex.model import Break
 
     # A 6-slide plan exercises the block-distribution fallback target.
-    plan = SlidePlan(1920, 1080, [Break(float(i) * 1080, "section") for i in range(1, 6)])
+    plan = SlidePlan(
+        1920, 1080, [Break(float(i) * 1080, "section") for i in range(1, 6)]
+    )
     out = WebflowImporter().transform(_page(tmp_path, html), plan)
     result = out.html_path.read_text()
     assert result.count("<section") >= 4, "div-section page should yield many slides"

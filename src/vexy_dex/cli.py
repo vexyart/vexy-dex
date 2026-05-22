@@ -19,8 +19,11 @@ console = Console()
 
 def _setup_logging(verbose: bool) -> None:
     logger.remove()
-    logger.add(sys.stderr, level="DEBUG" if verbose else "INFO",
-               format="<level>{level: <7}</level> {message}")
+    logger.add(
+        sys.stderr,
+        level="DEBUG" if verbose else "INFO",
+        format="<level>{level: <7}</level> {message}",
+    )
 
 
 def _summary(results) -> int:
@@ -34,13 +37,16 @@ def _summary(results) -> int:
     for r in results:
         if r.ok:
             ok += 1
-            table.add_row(r.strategy.name, "[green]✓[/green]",
-                          str(r.slide_count), str(r.out_dir))
+            table.add_row(
+                r.strategy.name, "[green]✓[/green]", str(r.slide_count), str(r.out_dir)
+            )
         else:
             table.add_row(r.strategy.name, "[red]✗[/red]", "-", r.error or "failed")
     console.print(table)
     total = len(results)
-    console.print(f"{ok}/{total} strategies succeeded." if total else "no strategies ran.")
+    console.print(
+        f"{ok}/{total} strategies succeeded." if total else "no strategies ran."
+    )
     if total == 0 or ok == 0:
         return 2
     return 0
@@ -49,14 +55,29 @@ def _summary(results) -> int:
 class VexyDex:
     """Turn an HTML page into slide decks through several engines at once."""
 
-    def build(self, url: str, out: str = "out", aspect: str | None = None,
-              size: str | None = None, strategies: str = "all", svg: bool = False,
-              vision: bool = False, verbose: bool = False, no_cache: bool = False) -> int:
+    def build(
+        self,
+        url: str,
+        out: str = "out",
+        aspect: str | None = None,
+        size: str | None = None,
+        strategies: str = "all",
+        svg: bool = False,
+        vision: bool = False,
+        verbose: bool = False,
+        no_cache: bool = False,
+    ) -> int:
         """Fetch -> analyze -> normalize -> render -> split, every strategy."""
         _setup_logging(verbose)
         settings = build_settings(
-            out=out, aspect=aspect, size=size, strategies=strategies,
-            svg=svg, vision=vision, verbose=verbose, no_cache=no_cache,
+            out=out,
+            aspect=aspect,
+            size=size,
+            strategies=strategies,
+            svg=svg,
+            vision=vision,
+            verbose=verbose,
+            no_cache=no_cache,
         )
         results = orchestrator.build(Source.parse(url), settings)
         return _summary(results)
@@ -69,28 +90,52 @@ class VexyDex:
         console.print(f"localized {url} -> {page.html_path} ({page.framework})")
         return str(page.html_path)
 
-    def analyze(self, url: str, out: str = "out", aspect: str | None = None,
-                size: str | None = None, vision: bool = False, verbose: bool = False) -> int:
+    def analyze(
+        self,
+        url: str,
+        out: str = "out",
+        aspect: str | None = None,
+        size: str | None = None,
+        vision: bool = False,
+        verbose: bool = False,
+    ) -> int:
         """Stage 1+2: fetch, classify, and plan slide breaks."""
         _setup_logging(verbose)
-        settings = build_settings(out=out, aspect=aspect, size=size,
-                                  vision=vision, verbose=verbose)
+        settings = build_settings(
+            out=out, aspect=aspect, size=size, vision=vision, verbose=verbose
+        )
         page = orchestrator.read_page(Source.parse(url), settings)
         plan = orchestrator.analyze_page(page, settings)
-        console.print(f"{plan.slide_count} slide(s); breaks at "
-                      f"{[round(b.y) for b in plan.breaks]}")
+        console.print(
+            f"{plan.slide_count} slide(s); breaks at "
+            f"{[round(b.y) for b in plan.breaks]}"
+        )
         return plan.slide_count
 
-    def render(self, slug: str, strategy: str, out: str = "out",
-               svg: bool = False, verbose: bool = False) -> int:
+    def render(
+        self,
+        slug: str,
+        strategy: str,
+        out: str = "out",
+        svg: bool = False,
+        verbose: bool = False,
+    ) -> int:
         """Stages 4-6 for one strategy from existing sidecars (re-run)."""
         _setup_logging(verbose)
-        settings = build_settings(out=out, strategies=strategy, svg=svg, verbose=verbose)
+        settings = build_settings(
+            out=out, strategies=strategy, svg=svg, verbose=verbose
+        )
         result = orchestrator.render_one(slug, strategy, settings)
         return _summary([result])
 
-    def split(self, pdf: str, out: str = ".", svg: bool = False,
-              prefix: str = "slide", verbose: bool = False) -> int:
+    def split(
+        self,
+        pdf: str,
+        out: str = ".",
+        svg: bool = False,
+        prefix: str = "slide",
+        verbose: bool = False,
+    ) -> int:
         """Stage 6 only: split a PDF into named per-slide files."""
         from pathlib import Path
 

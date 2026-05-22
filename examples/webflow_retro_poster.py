@@ -11,15 +11,14 @@ by probing the rendered layout at 1920x1080, normalizes each `<section>` into a
 slide, then renders through two engines in parallel:
 
 - playwright  -> Chromium fidelity (best for Webflow's styled hero sections)
-- weasyprint  -> pure-CSS paged media (more, text-tighter slides)
+- reveal      -> native reveal.js capture (one PDF page per slide)
 
-The two engines paginate differently on purpose; you cherry-pick the best
-rendering of each slide across the two folders.
+The engines paginate differently on purpose; you cherry-pick the best
+rendering of each slide across the folders.
 
 Requires the `all` extra (`uv sync --extra all` + `playwright install chromium`).
-On macOS, WeasyPrint needs Homebrew Pango on the dyld path:
 
-    DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib uv run examples/webflow_retro_poster.py
+    uv run examples/webflow_retro_poster.py
 """
 
 from __future__ import annotations
@@ -36,9 +35,7 @@ OUT = Path(__file__).parent / "output" / "retro-poster"
 
 
 def main() -> None:
-    settings = build_settings(
-        out=str(OUT), strategies="playwright,weasyprint", size="1920x1080"
-    )
+    settings = build_settings(out=str(OUT), strategies="all", size="1920x1080")
     results = build(Source.parse(URL), settings)
 
     print(f"\nInput : {URL}")

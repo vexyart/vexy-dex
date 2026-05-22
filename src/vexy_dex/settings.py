@@ -118,7 +118,9 @@ def build_settings(
         size or stage_cfg.get("size"),
     )
 
-    strat_raw = strategies if strategies is not None else strat_cfg.get("enabled", "all")
+    strat_raw = (
+        strategies if strategies is not None else strat_cfg.get("enabled", "all")
+    )
     if isinstance(strat_raw, str):
         strat = tuple(s.strip() for s in strat_raw.split(",") if s.strip())
     else:

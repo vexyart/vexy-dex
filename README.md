@@ -57,7 +57,7 @@ vexy-dex build https://www.vexy.art/lines/
 
 # Pick strategies and aspect ratio, also emit SVGs
 vexy-dex build https://blog.fontlab.com/ \
-    --strategies weasyprint,playwright --aspect 4:3 --svg
+    --strategies vivliostyle,playwright --aspect 4:3 --svg
 
 # Re-run a single stage on an existing PDF
 vexy-dex split out/lines/playwright/_combined.pdf --out out/lines/playwright --svg
@@ -68,8 +68,8 @@ Output lands as:
 ```
 out/lines/
   playwright/   01-slide.pdf  02-slide.pdf  …  index.html
-  weasyprint/   01-slide.pdf  …
-  decktape/     01-slide.pdf  …
+  vivliostyle/  01-slide.pdf  …
+  reveal/       01-slide.pdf  …
   _meta/        slideplan.json  run-summary.json
 ```
 
@@ -95,9 +95,8 @@ New frameworks are plugins, not core changes.
 | Strategy | Engine | Best for |
 |---|---|---|
 | `playwright` | Headless Chromium | Webflow, JS-heavy, highly styled pages |
-| `weasyprint` | Pure-Python CSS | MkDocs and other clean, static HTML |
 | `vivliostyle` | Chromium typesetting | Long-form / documentation, strong paged media |
-| `decktape` | Puppeteer + reveal.js | The reveal.js path, crisp per-slide capture |
+| `reveal` | Native reveal.js (Playwright + pypdf) | The reveal.js path, crisp per-slide capture |
 | `prince` | PrinceXML (opt-in) | Reference-quality paged media, if you have a licence |
 
 Install only what you want — a strategy whose tool is missing is skipped with a
@@ -115,7 +114,7 @@ plan always runs first.
 
 - Python 3.12+, installed with `uv`.
 - Playwright Chromium (`playwright install chromium`).
-- Optional: Node (`@vivliostyle/cli`, `decktape`), `monolith`, poppler (for
+- Optional: Node (`@vivliostyle/cli`), `monolith`, poppler (for
   SVG, pulled in by [`vexy-pdfsvgpy`](https://github.com/vexyart/vexy-pdfsvgpy)),
   Prince, and Ollama/llama.cpp for vision.
 

@@ -15,13 +15,13 @@ Captured 2026-05-22. Slide counts vary with the live page and engine metrics.
   "slides": 7,
   "results": [
     { "strategy": "playwright", "ok": true, "slides": 6 },
-    { "strategy": "weasyprint", "ok": true, "slides": 12 }
+    { "strategy": "reveal", "ok": true, "slides": 12 }
   ]
 }
 ```
 
 A real article (not the blog index). The MkDocs importer extracts
 `article.md-content__inner`, drops sidebar/header/footer/search, and splits by
-heading — code blocks and tables ride along intact. WeasyPrint is the natural
-fit for clean documentation HTML and packs more, text-tight slides (12) than
-Playwright's looser layout (6). Pick per slide across the two folders.
+heading — code blocks and tables ride along intact. The reveal engine captures
+its own deck (12 slides) versus Playwright's looser layout (6). Pick per slide
+across the two folders.

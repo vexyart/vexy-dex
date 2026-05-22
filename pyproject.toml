@@ -26,13 +26,11 @@ dependencies = [
 [project.optional-dependencies]
 # Heavy / platform-specific engines kept optional so the core installs anywhere.
 browser = ["playwright>=1.48"]
-weasyprint = ["weasyprint>=63"]
 extract = ["trafilatura>=1.12"]
 pdf = ["pikepdf>=9.4"]
 vision = ["instructor>=1"]
 all = [
     "playwright>=1.48",
-    "weasyprint>=63",
     "trafilatura>=1.12",
     "pikepdf>=9.4",
 ]
@@ -53,7 +51,6 @@ framer = "vexy_dex.importers.others:FramerImporter"
 generic = "vexy_dex.importers.generic:GenericImporter"
 
 [project.entry-points."vexy_dex.exporters"]
-weasyprint = "vexy_dex.exporters.weasyprint:WeasyPrintExporter"
 playwright = "vexy_dex.exporters.playwright:PlaywrightExporter"
 vivliostyle = "vexy_dex.exporters.vivliostyle:VivliostyleExporter"
 reveal = "vexy_dex.exporters.reveal:RevealExporter"

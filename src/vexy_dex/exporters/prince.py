@@ -34,7 +34,10 @@ class PrinceExporter:
             raise ExportError("prince not configured (set VEXY_DEX_PRINCE_PATH)")
         run_engine(
             [
-                binary, str(job.html_path), "-o", str(out),
+                binary,
+                str(job.html_path),
+                "-o",
+                str(out),
                 f"--page-size={job.plan.stage_w}px {job.plan.stage_h}px",
             ],
             timeout=180,

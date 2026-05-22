@@ -12,7 +12,10 @@ from dataclasses import dataclass
 # (framework, list of substrings, weight). First strong match wins; ties → generic.
 _RULES: list[tuple[str, list[str]]] = [
     ("webflow", ["data-wf-page", "w-mod-js", "data-w-id", "webflow.js"]),
-    ("mkdocs-material", ["mkdocs-material", "md-content", "data-md-component", "md-typeset"]),
+    (
+        "mkdocs-material",
+        ["mkdocs-material", "md-content", "data-md-component", "md-typeset"],
+    ),
     ("docusaurus", ["__docusaurus", "theme-doc-markdown"]),
     ("framer", ["data-framer-name", "framer.app"]),
     ("bubble", ["data-bb-id", "bubble-element"]),
@@ -20,12 +23,12 @@ _RULES: list[tuple[str, list[str]]] = [
 
 # Strategy order recommendation per framework (spec/05, 08).
 _STRATEGY_ORDER: dict[str, tuple[str, ...]] = {
-    "webflow": ("playwright", "reveal", "weasyprint"),
-    "mkdocs-material": ("weasyprint", "vivliostyle", "playwright"),
-    "docusaurus": ("weasyprint", "vivliostyle", "playwright"),
+    "webflow": ("playwright", "reveal"),
+    "mkdocs-material": ("vivliostyle", "playwright"),
+    "docusaurus": ("vivliostyle", "playwright"),
     "framer": ("playwright", "reveal"),
-    "bubble": ("playwright", "weasyprint"),
-    "generic": ("weasyprint", "playwright", "vivliostyle"),
+    "bubble": ("playwright", "vivliostyle"),
+    "generic": ("vivliostyle", "playwright"),
 }
 
 

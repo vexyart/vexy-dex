@@ -85,11 +85,20 @@ def _fetch_one(client, tag, attr, url, asset_dir: Path) -> None:
         else:
             (asset_dir / name).write_bytes(resp.content)
         tag[attr] = f"assets/{name}"
+        # The resource is now a local file. Subresource Integrity (and the CORS
+        # check `crossorigin` forces) makes the browser BLOCK it under file://
+        # — an opaque origin can't satisfy SRI — so a localized Webflow CSS link
+        # silently fails to apply and the page renders unstyled. Drop both.
+        for dead in ("integrity", "crossorigin"):
+            if tag.has_attr(dead):
+                del tag[dead]
     except Exception as e:  # network flake on one asset must not abort the page
         logger.warning("failed to localize asset {}: {}", url, e)
 
 
-def _localize_css(client, css: str, css_url: str, asset_dir: Path, *, depth: int) -> str:
+def _localize_css(
+    client, css: str, css_url: str, asset_dir: Path, *, depth: int
+) -> str:
     """Download url()/@import targets in a stylesheet and rewrite to local refs.
 
     Bounded recursion (depth) for @import chains. Failures leave the original
@@ -111,7 +120,9 @@ def _localize_css(client, css: str, css_url: str, asset_dir: Path, *, depth: int
                 return None
             name = _safe_name(absolute)
             if as_css and depth > 0:
-                text = _localize_css(client, r.text, absolute, asset_dir, depth=depth - 1)
+                text = _localize_css(
+                    client, r.text, absolute, asset_dir, depth=depth - 1
+                )
                 (asset_dir / name).write_text(text, encoding="utf-8")
             else:
                 (asset_dir / name).write_bytes(r.content)

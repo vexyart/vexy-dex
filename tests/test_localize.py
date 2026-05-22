@@ -3,7 +3,9 @@
 
 from __future__ import annotations
 
-from vexy_dex.readers.localize import _localize_css, _safe_name
+from bs4 import BeautifulSoup
+
+from vexy_dex.readers.localize import _fetch_one, _localize_css, _safe_name
 
 
 class _Resp:
@@ -59,6 +61,22 @@ def test_localize_css_skips_data_uri(tmp_path):
     out = _localize_css(client, css, "https://site.test/a.css", tmp_path, depth=1)
     assert "data:image/png" in out, "data URIs left untouched"
     assert client.seen == []
+
+
+def test_fetch_one_strips_integrity_and_crossorigin(tmp_path):
+    # SRI + crossorigin make a browser BLOCK the now-local stylesheet under
+    # file:// (opaque origin), so localization must remove them (spec/07).
+    client = _FakeClient({"https://cdn.test/app.css": _Resp("body{color:red}")})
+    tag = BeautifulSoup(
+        '<link rel="stylesheet" href="https://cdn.test/app.css" '
+        'integrity="sha384-abc" crossorigin="anonymous">',
+        "lxml",
+    ).find("link")
+    _fetch_one(client, tag, "href", "https://cdn.test/app.css", tmp_path)
+    assert tag["href"] == "assets/app.css"
+    assert not tag.has_attr("integrity")
+    assert not tag.has_attr("crossorigin")
+    assert (tmp_path / "app.css").exists()
 
 
 def test_safe_name_hashes_long_paths():

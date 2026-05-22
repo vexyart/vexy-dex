@@ -162,8 +162,8 @@ Ship four engines; each is a plugin implementing one ABC.
 1. **Week 1 — walking skeleton:** httpx/Playwright reader → generic importer →
    Playwright exporter → pypdf writer → Fire `build URL`. One strategy, one
    deck/sec on static pages.
-2. **Weeks 2–3 — CMS-aware:** Webflow + MkDocs importers; WeasyPrint +
-   Vivliostyle + DeckTape exporters; fingerprint engine; viewport pagination.
+2. **Weeks 2–3 — CMS-aware:** Webflow + MkDocs importers; Vivliostyle +
+   native reveal exporters; fingerprint engine; viewport pagination.
    Benchmark against fontlab.com and blog.fontlab.com.
 3. **Week 4+ — optional intelligence:** MiniCPM-V pre-importer behind a flag;
    SVG output via vexy-pdfsvgpy; reveal preview writer.

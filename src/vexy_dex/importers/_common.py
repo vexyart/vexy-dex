@@ -15,6 +15,8 @@ def write_normalized(page: PageDoc, html: str, suffix: str = "normalized") -> Pa
     norm_dir.mkdir(parents=True, exist_ok=True)
     # Keep assets reachable: normalized HTML references ../raw/assets/...
     out = norm_dir / f"{suffix}.html"
-    html = html.replace('"assets/', '"../raw/assets/').replace("'assets/", "'../raw/assets/")
+    html = html.replace('"assets/', '"../raw/assets/').replace(
+        "'assets/", "'../raw/assets/"
+    )
     out.write_text(html, encoding="utf-8")
     return replace(page, html_path=out)

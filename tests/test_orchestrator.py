@@ -1,5 +1,5 @@
 # this_file: tests/test_orchestrator.py
-"""Concurrency, caching, and the render verb (spec/21, 04). WeasyPrint-gated."""
+"""Concurrency, caching, and the render verb (spec/21, 04). Playwright-gated."""
 
 from __future__ import annotations
 
@@ -10,24 +10,21 @@ from vexy_dex.orchestrator import build, render_one
 from vexy_dex.settings import build_settings
 
 
-def _weasyprint_ok() -> bool:
+def _playwright_ok() -> bool:
     try:
-        import weasyprint  # noqa: F401
+        import playwright.sync_api  # noqa: F401
 
-        weasyprint.HTML(string="<p>x</p>").write_pdf()
         return True
     except Exception:
         return False
 
 
-pytestmark = pytest.mark.skipif(
-    not _weasyprint_ok(), reason="weasyprint native libs unavailable"
-)
+pytestmark = pytest.mark.skipif(not _playwright_ok(), reason="playwright unavailable")
 
 
 def test_cache_hit_on_second_build(tmp_path, fixtures):
     src = Source.parse(str(fixtures / "generic_article" / "index.html"))
-    settings = build_settings(out=str(tmp_path), strategies="weasyprint")
+    settings = build_settings(out=str(tmp_path), strategies="reveal")
     first = build(src, settings)
     cache = tmp_path / src.slug / "_meta" / "cache"
     assert any(cache.glob("*.pdf")), "first build should populate the cache"
@@ -38,9 +35,9 @@ def test_cache_hit_on_second_build(tmp_path, fixtures):
 
 def test_render_verb_reuses_sidecars(tmp_path, fixtures):
     src = Source.parse(str(fixtures / "mkdocs_sample" / "index.html"))
-    settings = build_settings(out=str(tmp_path), strategies="weasyprint")
+    settings = build_settings(out=str(tmp_path), strategies="reveal")
     build(src, settings)
-    result = render_one(src.slug, "weasyprint", settings)
+    result = render_one(src.slug, "reveal", settings)
     assert result.ok, result.error
     assert result.slide_count >= 2
 
@@ -48,13 +45,13 @@ def test_render_verb_reuses_sidecars(tmp_path, fixtures):
 def test_failed_strategy_isolated(tmp_path, fixtures, monkeypatch):
     """A raising exporter yields a failed DeckResult, not an aborted run."""
     src = Source.parse(str(fixtures / "generic_article" / "index.html"))
-    settings = build_settings(out=str(tmp_path), strategies="weasyprint")
-    import vexy_dex.exporters.weasyprint as wp
+    settings = build_settings(out=str(tmp_path), strategies="reveal")
+    import vexy_dex.exporters.reveal as rv
 
     def boom(self, job, out):
         raise RuntimeError("kaboom")
 
-    monkeypatch.setattr(wp.WeasyPrintExporter, "export", boom)
+    monkeypatch.setattr(rv.RevealExporter, "export", boom)
     results = build(src, settings)
     assert len(results) == 1
     assert results[0].ok is False

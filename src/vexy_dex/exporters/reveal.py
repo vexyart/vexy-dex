@@ -39,6 +39,7 @@ class RevealExporter:
             from pypdf import PdfReader, PdfWriter
         except Exception as e:  # pragma: no cover
             raise ExportError(f"reveal deps missing: {e}") from e
+        from .._browser import serving
 
         w, h = job.plan.stage_w, job.plan.stage_h
         try:
@@ -46,23 +47,23 @@ class RevealExporter:
             with sync_playwright() as p:
                 browser = p.chromium.launch()
                 page = browser.new_page(viewport={"width": w, "height": h})
-                page.goto(job.html_path.resolve().as_uri(), wait_until="networkidle")
-                page.wait_for_function(_READY, timeout=30_000)
-                page.emulate_media(media="screen")
+                with serving(page, job.html_path):
+                    page.wait_for_function(_READY, timeout=30_000)
+                    page.emulate_media(media="screen")
 
-                count = int(page.evaluate("Reveal.getTotalSlides()"))
-                page.evaluate("Reveal.slide(0, 0)")
-                for i in range(count):
-                    buf = page.pdf(
-                        width=f"{w}px",
-                        height=f"{h}px",
-                        print_background=True,
-                        page_ranges="1",
-                    )
-                    writer.append(PdfReader(io.BytesIO(buf)))
-                    if i < count - 1:
-                        page.evaluate("Reveal.next()")
-                        page.wait_for_timeout(80)  # let the slide settle
+                    count = int(page.evaluate("Reveal.getTotalSlides()"))
+                    page.evaluate("Reveal.slide(0, 0)")
+                    for i in range(count):
+                        buf = page.pdf(
+                            width=f"{w}px",
+                            height=f"{h}px",
+                            print_background=True,
+                            page_ranges="1",
+                        )
+                        writer.append(PdfReader(io.BytesIO(buf)))
+                        if i < count - 1:
+                            page.evaluate("Reveal.next()")
+                            page.wait_for_timeout(80)  # let the slide settle
                 browser.close()
 
             with out.open("wb") as f:

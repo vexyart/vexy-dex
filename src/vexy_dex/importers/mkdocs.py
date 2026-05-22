@@ -8,8 +8,16 @@ from ..model import PageDoc, SlidePlan
 from ._common import write_normalized
 
 _CHROME = [
-    ".md-sidebar", ".md-header", ".md-footer", ".md-search", ".md-nav",
-    ".md-source-file", ".md-content__button", "header", "nav", "footer",
+    ".md-sidebar",
+    ".md-header",
+    ".md-footer",
+    ".md-search",
+    ".md-nav",
+    ".md-source-file",
+    ".md-content__button",
+    "header",
+    "nav",
+    "footer",
 ]
 
 

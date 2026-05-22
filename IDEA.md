@@ -93,9 +93,9 @@ Decided after the research in [`research/`](research/), synthesized in
   [`webflow2reveal`](https://github.com/twardoch/webflow2reveal)'s `compiler.py`
   (`./private/webflow2reveal/`), now first-class vexy-dex code; the legacy
   package is retired.
-- **Export engines:** Playwright (Chromium), WeasyPrint,
-  [Vivliostyle](https://vivliostyle.org/en/), DeckTape, and opt-in
-  [Prince](https://www.princexml.com/).
+- **Export engines:** Playwright (Chromium),
+  [Vivliostyle](https://vivliostyle.org/en/), a native reveal.js exporter, and
+  opt-in [Prince](https://www.princexml.com/).
 - **Split / SVG:** `pypdf`/`pikepdf`, and `vexy-pdfsvgpy`.
 - **Optional vision:** MiniCPM-V 4.6 via llama.cpp/Ollama.
 

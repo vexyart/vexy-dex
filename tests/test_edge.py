@@ -21,12 +21,15 @@ def _page(tmp_path, html: str) -> PageDoc:
     raw.mkdir()
     f = raw / "index.html"
     f.write_text(html, encoding="utf-8")
-    return PageDoc(source=Source.parse("https://x.test/p"), html_path=f,
-                   asset_dir=raw / "assets")
+    return PageDoc(
+        source=Source.parse("https://x.test/p"), html_path=f, asset_dir=raw / "assets"
+    )
 
 
 def test_empty_page_yields_one_slide(tmp_path):
-    out = GenericImporter().transform(_page(tmp_path, "<html><body></body></html>"), PLAN)
+    out = GenericImporter().transform(
+        _page(tmp_path, "<html><body></body></html>"), PLAN
+    )
     assert dom.already_reveal(out.html_path.read_text())
 
 
@@ -49,8 +52,10 @@ def test_missing_file_raises_read_error(tmp_path):
 
 
 def test_docusaurus_detect_and_split(tmp_path):
-    html = ('<div id="__docusaurus"><div class="theme-doc-markdown">'
-            "<h1>A</h1><p>1</p><h2>B</h2><p>2</p></div></div>")
+    html = (
+        '<div id="__docusaurus"><div class="theme-doc-markdown">'
+        "<h1>A</h1><p>1</p><h2>B</h2><p>2</p></div></div>"
+    )
     page = _page(tmp_path, html)
     imp = DocusaurusImporter()
     assert imp.detect(page) > 0
@@ -59,8 +64,12 @@ def test_docusaurus_detect_and_split(tmp_path):
 
 
 def test_bubble_relaxes_absolute_positioning(tmp_path):
-    html = ('<body data-bb-id="1"><div style="position:absolute;top:0">'
-            "<h1>Hi</h1></div></body>")
+    html = (
+        '<body data-bb-id="1"><div style="position:absolute;top:0">'
+        "<h1>Hi</h1></div></body>"
+    )
     out = BubbleImporter().transform(_page(tmp_path, html), PLAN)
-    assert "position: relative" in out.html_path.read_text().lower() or \
-           "reveal" in out.html_path.read_text()
+    assert (
+        "position: relative" in out.html_path.read_text().lower()
+        or "reveal" in out.html_path.read_text()
+    )

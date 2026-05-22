@@ -24,13 +24,22 @@ _CHROME_KEYWORDS = ("menu", "nav", "footer", "mask", "header", "banner")
 
 # Selectors for page chrome to drop before the block-split fallback.
 _CHROME_SELECTORS = [
-    "nav", "header", "footer", ".navbar", ".w-nav",
-    "[class*='menu']", "[class*='footer']", "[class*='banner']",
+    "nav",
+    "header",
+    "footer",
+    ".navbar",
+    ".w-nav",
+    "[class*='menu']",
+    "[class*='footer']",
+    "[class*='banner']",
+    ".w-webflow-badge",
 ]
 
 
 def _classes_str(node) -> str:
-    return " ".join(node.get("class") or []).lower() + " " + (node.get("id") or "").lower()
+    return (
+        " ".join(node.get("class") or []).lower() + " " + (node.get("id") or "").lower()
+    )
 
 
 def _is_slide_section(section) -> bool:
@@ -64,9 +73,22 @@ class WebflowImporter:
 
     def transform(self, page: PageDoc, plan: SlidePlan) -> PageDoc:
         raw = page.html_path.read_text(encoding="utf-8")
-        if dom.already_reveal(raw):  # idempotent
-            return page
+        if dom.already_reveal(raw):
+            # Our own canonical output → idempotent no-op. A freshly-read live
+            # page that is *already* reveal-shaped (e.g. a vexy.art deck) still
+            # needs relocating to normalized/ so its `assets/` refs get rewritten
+            # to `../raw/assets/` (else they break in the strategy dir) and the
+            # badge dropped.
+            if page.html_path.parent.name == "normalized":
+                return page
+            soup = dom.parse(raw)
+            dom.drop_chrome(soup, [".w-webflow-badge"])
+            return write_normalized(page, str(soup))
         soup = dom.parse(raw)
+        # The "Made in Webflow" badge is injected on free sites; drop it before
+        # extraction (the section path skips drop_chrome) — belt-and-braces with
+        # the CSS hide in the pre-exporter for any JS re-injection (spec/15).
+        dom.drop_chrome(soup, [".w-webflow-badge"])
         body = soup.body or soup
 
         sections = []
@@ -93,4 +115,6 @@ class WebflowImporter:
             body2 = soup2.body or soup2
             sections = dom.sectionize(str(body2), target=max(plan.slide_count, 2))
 
-        return write_normalized(page, dom.wrap_reveal(sections))
+        # Carry the page's stylesheets so the Webflow design survives wrapping —
+        # without them the extracted sections render as unstyled HTML.
+        return write_normalized(page, dom.wrap_reveal(sections, dom.head_styles(soup)))

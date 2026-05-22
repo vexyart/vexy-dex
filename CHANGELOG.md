@@ -6,10 +6,21 @@
 
 ### Changed
 
+- **Replaced the Node/DeckTape `decktape` strategy with a native `reveal`
+  exporter** (`exporters/reveal.py`): Playwright drives reveal.js
+  (`getTotalSlides`/`slide`/`next`) and captures one `page.pdf` per slide,
+  `pypdf` merges them. Drops the Node + `decktape` toolchain entirely — the
+  reveal deck is initialized with `fragments:false` and all chrome off so the
+  capture loop is deterministic. Strategy/output folder renamed `decktape` →
+  `reveal`; classifier order updated.
+- **Removed WeasyPrint support entirely** — exporter, entry point, extras,
+  classifier orders, tests, examples and spec/doc references. The paged-media
+  recommendation is now Vivliostyle (with Prince opt-in). `test_writers` builds
+  its sample PDF with `pypdf` instead of WeasyPrint (also fixing the prior
+  GLib-related failures). Shipped engines: playwright, vivliostyle, reveal, prince.
 - `examples/_runner.py` now defaults to `strategies="all"`, so examples exercise
-  every engine whose deps are installed (playwright/decktape/prince here) and
-  cleanly skip the rest via `available()`, instead of force-running a hardcoded
-  `playwright,weasyprint` pair (which surfaced a loud GLib error for weasyprint).
+  every engine whose deps are installed and cleanly skip the rest via
+  `available()`, instead of a hardcoded pair.
 
 ### Spec — decouple the slide IR from reveal.js (planning)
 
@@ -23,6 +34,25 @@ is tracked, not yet implemented.
 
 ### Fixed
 
+- **Localized pages rendered unstyled.** Three causes, all fixed:
+  - Localized `<link>`/`<script>` kept `integrity`/`crossorigin`; under `file://`
+    (and even http) Subresource Integrity blocks the now-local stylesheet. The
+    localizer strips both attributes (`readers/localize.py`).
+  - The Webflow importer dropped the page's stylesheets when wrapping slides —
+    now carries them via `dom.head_styles` (matching the other importers).
+  - An already-reveal-shaped live page (e.g. a vexy.art deck) short-circuited
+    normalization and kept `assets/` refs relative to `raw/`, which broke once
+    the HTML moved to the strategy dir. The `already_reveal` branch now relocates
+    + rewrites paths via `write_normalized` for raw input (idempotent no-op for
+    our own normalized output).
+- **Browser navigation hardened.** All local-page rendering (playwright/reveal/
+  vision/pagination probe) now serves the deck over a throwaway loopback HTTP
+  server and waits for `load` instead of opening `file://` and waiting for
+  `networkidle` — a real http:// origin avoids file:// CORS/SRI/font quirks, and
+  `load` doesn't hang when offline JS retries dead CDN assets (`_browser.py`;
+  fixes the fontlab-8 `Page.goto` timeout).
+- **Webflow "Made in Webflow" badge** (`.w-webflow-badge`) is DOM-removed in the
+  importer and force-hidden via the pre-exporter theme CSS.
 - Reveal chassis now disables all reveal.js UI chrome (controls, progress,
   slide-number, help/pause overlays) via `Reveal.initialize` flags plus a CSS
   guard — slides are destined for PDF/SVG and must not show navigation buttons

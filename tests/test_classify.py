@@ -10,10 +10,12 @@ def test_classify_when_webflow_markers_then_webflow():
 
 
 def test_classify_when_mkdocs_generator_then_mkdocs():
-    html = '<meta name="generator" content="mkdocs-material 9.5"><div class="md-content">'
+    html = (
+        '<meta name="generator" content="mkdocs-material 9.5"><div class="md-content">'
+    )
     c = classify(html, {"generator": "mkdocs-material 9.5"})
     assert c.framework == "mkdocs-material"
-    assert c.strategy_order[0] == "weasyprint", "docs should prefer weasyprint first"
+    assert c.strategy_order[0] == "vivliostyle", "docs should prefer vivliostyle first"
 
 
 def test_classify_when_nothing_matches_then_generic():

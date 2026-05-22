@@ -16,4 +16,7 @@ from __future__ import annotations
 from _runner import run
 
 if __name__ == "__main__":
-    run("https://fontlab-com.webflow.io/font-converter/transtype/index-transtype", "transtype")
+    run(
+        "https://fontlab-com.webflow.io/font-converter/transtype/index-transtype",
+        "transtype",
+    )

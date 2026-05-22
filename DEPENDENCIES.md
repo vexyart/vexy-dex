@@ -20,10 +20,6 @@ out because vexy-dex ships under MIT and must not link AGPL/GPL code (spec/24).
 
 - **playwright** (`browser`, Apache-2.0) — dynamic reader, pagination probe,
   Chromium PDF exporter. Needs `playwright install chromium`.
-- **weasyprint** (`weasyprint`, BSD-3) — pure-Python CSS paged-media exporter.
-  **macOS note:** needs Pango etc.; if `import weasyprint` fails, install via
-  Homebrew (`brew install pango`) and run with
-  `DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib`.
 - **trafilatura** (`extract`, Apache-2.0) — content extraction for the generic
   importer. Falls back to a chrome-stripping pass if absent.
 - **pikepdf** (`pdf`, MPL-2.0) — qpdf-backed split for damaged/structured PDFs.
@@ -31,8 +27,8 @@ out because vexy-dex ships under MIT and must not link AGPL/GPL code (spec/24).
 
 ## External tools (not pip; degrade gracefully when missing)
 
-- **Node** → `@vivliostyle/cli` (AGPL-3.0) and `decktape` (MIT). **Vivliostyle
-  is shelled out only — never linked** (AGPL boundary).
+- **Node** → `@vivliostyle/cli` (AGPL-3.0). **Vivliostyle is shelled out only —
+  never linked** (AGPL boundary).
 - **monolith** (CC0) — single-file page freeze for the hardest pages.
 - **poppler** (`pdftocairo`) — pulled in by `vexy-pdfsvgpy` for SVG output.
 - **Prince** (proprietary) — opt-in premium exporter; set `VEXY_DEX_PRINCE_PATH`.
@@ -49,7 +45,7 @@ out because vexy-dex ships under MIT and must not link AGPL/GPL code (spec/24).
 ## Vendored assets
 
 - **reveal.js 5.1** (MIT) — `src/vexy_dex/assets/reveal/` (reveal.css, reveal.js,
-  theme white.css). Bundled so the DeckTape input and reveal preview are
+  theme white.css). Bundled so the reveal exporter input and reveal preview are
   self-contained offline decks.
 
 ## Not a dependency

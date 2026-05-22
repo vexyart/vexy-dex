@@ -52,7 +52,10 @@ class BubbleImporter:
         # delegate the actual slide split to the generic path.
         for el in soup.find_all(style=re.compile(r"position\s*:\s*absolute", re.I)):
             el["style"] = re.sub(
-                r"position\s*:\s*absolute", "position: relative", el["style"], flags=re.I
+                r"position\s*:\s*absolute",
+                "position: relative",
+                el["style"],
+                flags=re.I,
             )
         flattened = write_normalized(page, str(soup), suffix="flattened")
         return GenericImporter().transform(flattened, plan)

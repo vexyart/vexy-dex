@@ -61,10 +61,10 @@ Grounding: see [`../RESEARCH.md`](../RESEARCH.md) for the tool decisions and
   capability flags (JS support, paged-media), parallel dispatch.
 - **[17 — Stage 5: Chromium / Playwright Exporter](17.md)** — `page.pdf()` at a
   locked stage size; the Chromium-only constraint; print-background.
-- **[18 — Stage 5: CSS Paged-Media Exporters](18.md)** — WeasyPrint (primary,
-  pure-Python), Vivliostyle CLI (AGPL, shell out), Prince (opt-in premium).
-- **[19 — Stage 5: Slide-Framework Exporter (Reveal.js + DeckTape)](19.md)** —
-  Serving the reveal HTML and capturing per-slide frames with DeckTape.
+- **[18 — Stage 5: CSS Paged-Media Exporters](18.md)** — Vivliostyle CLI
+  (primary, AGPL, shell out), Prince (opt-in premium).
+- **[19 — Stage 5: Slide-Framework Exporter (Reveal.js)](19.md)** —
+  Serving the reveal HTML and capturing per-slide frames natively via Playwright.
 - **[20 — Stage 6: Writers](20.md)** — PDF splitting (`pypdf`/`pikepdf`), SVG via
   `vexy-pdfsvgpy`, the reveal preview index, file naming.
 - **[21 — Orchestration, Concurrency & Caching](21.md)** — The fan-out graph,

@@ -38,7 +38,9 @@ class StaticReader:
             html = self._fetch(source.raw)
             base_url = source.raw
             if self._looks_client_rendered(html):
-                logger.info("thin static body for {}; escalating to dynamic", source.raw)
+                logger.info(
+                    "thin static body for {}; escalating to dynamic", source.raw
+                )
                 try:
                     from .dynamic import DynamicReader
 

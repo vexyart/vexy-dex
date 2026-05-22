@@ -21,9 +21,13 @@ class VivliostyleExporter:
     def export(self, job: RenderJob, out: Path) -> Path:
         run_engine(
             [
-                "vivliostyle", "build", str(job.html_path),
-                "-s", f"{job.plan.stage_w}px,{job.plan.stage_h}px",
-                "-o", str(out),
+                "vivliostyle",
+                "build",
+                str(job.html_path),
+                "-s",
+                f"{job.plan.stage_w}px,{job.plan.stage_h}px",
+                "-o",
+                str(out),
             ],
             timeout=180,
         )

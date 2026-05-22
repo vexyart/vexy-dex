@@ -1,21 +1,20 @@
 # this_file: tests/test_writers.py
 from __future__ import annotations
 
-import pytest
-
 from vexy_dex import writers
 
 
 def _make_pdf(path, pages: int):
-    weasyprint = pytest.importorskip("weasyprint")
-    html = "".join(
-        f'<div style="page-break-after:always">slide {i}</div>' for i in range(pages)
-    )
-    weasyprint.HTML(string=html).write_pdf(str(path))
+    from pypdf import PdfWriter
+
+    w = PdfWriter()
+    for _ in range(pages):
+        w.add_blank_page(width=1920, height=1080)
+    with path.open("wb") as f:
+        w.write(f)
 
 
 def test_split_pdf_names_zero_padded(tmp_path):
-    pytest.importorskip("weasyprint")
     pdf = tmp_path / "deck.pdf"
     _make_pdf(pdf, 3)
     out = tmp_path / "out"
@@ -25,7 +24,6 @@ def test_split_pdf_names_zero_padded(tmp_path):
 
 
 def test_build_preview_emits_index(tmp_path):
-    pytest.importorskip("weasyprint")
     pdf = tmp_path / "deck.pdf"
     _make_pdf(pdf, 2)
     out = tmp_path / "out"

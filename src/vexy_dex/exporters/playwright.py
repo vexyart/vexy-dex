@@ -27,22 +27,24 @@ class PlaywrightExporter:
             from playwright.sync_api import sync_playwright
         except Exception as e:  # pragma: no cover
             raise ExportError(f"playwright not installed: {e}") from e
+        from .._browser import serving
+
         w, h = job.plan.stage_w, job.plan.stage_h
         try:
             with sync_playwright() as p:
                 browser = p.chromium.launch()
                 page = browser.new_page(viewport={"width": w, "height": h})
-                page.goto(job.html_path.resolve().as_uri(), wait_until="networkidle")
-                for css in job.extra_css:
-                    page.add_style_tag(path=str(css))
-                page.emulate_media(media="screen")
-                page.pdf(
-                    path=str(out),
-                    width=f"{w}px",
-                    height=f"{h}px",
-                    print_background=True,
-                    prefer_css_page_size=True,
-                )
+                with serving(page, job.html_path):
+                    for css in job.extra_css:
+                        page.add_style_tag(path=str(css))
+                    page.emulate_media(media="screen")
+                    page.pdf(
+                        path=str(out),
+                        width=f"{w}px",
+                        height=f"{h}px",
+                        print_background=True,
+                        prefer_css_page_size=True,
+                    )
                 browser.close()
         except Exception as e:
             raise ExportError(f"playwright export failed: {e}") from e

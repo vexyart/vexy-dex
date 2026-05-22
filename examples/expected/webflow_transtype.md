@@ -15,7 +15,7 @@ Captured 2026-05-22. Slide counts vary with the live page and engine metrics.
   "slides": 18,
   "results": [
     { "strategy": "playwright", "ok": true, "slides": 14 },
-    { "strategy": "weasyprint", "ok": true, "slides": 17 }
+    { "strategy": "reveal", "ok": true, "slides": 17 }
   ]
 }
 ```

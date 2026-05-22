@@ -15,12 +15,12 @@ Captured 2026-05-22. Slide counts vary with the live page and engine metrics.
   "slides": 3,
   "results": [
     { "strategy": "playwright", "ok": true, "slides": 2 },
-    { "strategy": "weasyprint", "ok": true, "slides": 4 }
+    { "strategy": "reveal", "ok": true, "slides": 4 }
   ]
 }
 ```
 
 A short, hero-heavy homepage with a couple of real `<section>` tags — few
-slides, mostly visual. Playwright keeps it tight (2); WeasyPrint splits the
+slides, mostly visual. Playwright keeps it tight (2); reveal splits the
 footer-ish content into 4. Output under
 `examples/output/fontlab-home/<strategy>/` (gitignored PDFs + `index.html`).

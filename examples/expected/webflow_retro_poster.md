@@ -21,13 +21,13 @@ so treat these as representative, not exact.
   "slides": 33,
   "results": [
     { "strategy": "playwright", "ok": true, "slides": 18, "error": null },
-    { "strategy": "weasyprint", "ok": true, "slides": 26, "error": null }
+    { "strategy": "reveal", "ok": true, "slides": 26, "error": null }
   ]
 }
 ```
 
 `slides: 33` is the pagination plan from the viewport probe; each engine then
-renders its own count (Playwright 18, WeasyPrint 26). The divergence is the
+renders its own count (Playwright 18, reveal 26). The divergence is the
 point — pick the best rendering of each slide across the two folders.
 
 ## Output tree (PDFs are gitignored under `examples/output/`)
@@ -43,7 +43,7 @@ examples/output/retro-poster/www-vexy-art-lines-case-retro-poster/
 ├── playwright/
 │   ├── 01-slide.pdf … 18-slide.pdf   (~780 KB total)
 │   └── index.html              # reveal preview
-└── weasyprint/
+└── reveal/
     ├── 01-slide.pdf … 26-slide.pdf   (~604 KB total)
     └── index.html
 ```

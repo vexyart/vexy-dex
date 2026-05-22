@@ -67,7 +67,9 @@ class PageDoc:
     def from_dict(cls, d: dict) -> PageDoc:
         src = d["source"]
         return cls(
-            source=Source(raw=src["raw"], kind=SourceKind(src["kind"]), slug=src["slug"]),
+            source=Source(
+                raw=src["raw"], kind=SourceKind(src["kind"]), slug=src["slug"]
+            ),
             html_path=Path(d["html_path"]),
             asset_dir=Path(d["asset_dir"]),
             framework=d.get("framework", "generic"),

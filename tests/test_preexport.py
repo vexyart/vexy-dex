@@ -17,21 +17,26 @@ def _page(tmp_path) -> PageDoc:
         "<section>a</section></div></div></body></html>",
         encoding="utf-8",
     )
-    return PageDoc(source=Source.parse("https://x.test/p"), html_path=html,
-                   asset_dir=work / "raw" / "assets")
+    return PageDoc(
+        source=Source.parse("https://x.test/p"),
+        html_path=html,
+        asset_dir=work / "raw" / "assets",
+    )
 
 
 def test_paged_strategy_injects_page_css(tmp_path):
-    job = preexport.prepare(_page(tmp_path), SlidePlan(1920, 1080),
-                            Strategy("weasyprint", "weasyprint"))
+    job = preexport.prepare(
+        _page(tmp_path), SlidePlan(1920, 1080), Strategy("vivliostyle", "vivliostyle")
+    )
     text = job.html_path.read_text()
     assert "@page" in text and "1920px 1080px" in text
     assert job.extra_css and job.extra_css[0].exists()
 
 
 def test_reveal_strategy_bundles_revealjs(tmp_path):
-    job = preexport.prepare(_page(tmp_path), SlidePlan(1280, 720),
-                            Strategy("reveal", "reveal"))
+    job = preexport.prepare(
+        _page(tmp_path), SlidePlan(1280, 720), Strategy("reveal", "reveal")
+    )
     text = job.html_path.read_text()
     assert "reveal/reveal.js" in text, "reveal.js script should be injected"
     assert "Reveal.initialize" in text and "width:1280" in text

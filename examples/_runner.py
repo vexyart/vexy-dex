@@ -6,10 +6,8 @@ every engine whose runtime deps are present and silently skips the rest
 (`available()` gate), so the example output reflects what's actually installed:
 
   - playwright  → needs `playwright install chromium` (usually present)
-  - weasyprint  → needs GLib/Pango; on macOS prefix the run with
-                  DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib (else skipped)
   - vivliostyle → needs Node + `npm i -g @vivliostyle/cli` (else skipped)
-  - decktape    → needs Node + `npm i -g decktape` (else skipped)
+  - reveal      → native reveal.js capture via Playwright (else skipped)
   - prince      → opt-in proprietary binary via [engines].prince_path (else skipped)
 
 Pass an explicit comma list to force specific strategies (and to surface a loud

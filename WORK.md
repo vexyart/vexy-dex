@@ -30,9 +30,9 @@ fixtures.
   luminance); webflow (adapted from compiler.py), mkdocs-material, generic
   (trafilatura); idempotent on canonical input.
 - **Pre-export**: paged-media CSS + neutral theme injection → RenderJob.
-- **Exporters**: ABC + capability-aware selection; weasyprint, playwright,
-  vivliostyle, decktape, prince (all with `available()` gating + subprocess
-  discipline).
+- **Exporters**: ABC + capability-aware selection; playwright, vivliostyle,
+  reveal (native reveal.js via Playwright + pypdf), prince (all with
+  `available()` gating + subprocess discipline).
 - **Writers**: pypdf split, optional SVG via vexy-pdfsvgpy, preview index.
 - **Orchestrator**: fan-out, per-strategy isolation, run-summary sidecar.
 - **Tests**: 29 passing (classify, dom, paginate, settings, importers, writers,
@@ -91,5 +91,15 @@ break a project principle (CLAUDE.md):
   current per-strategy launch is correct and fast enough for the local CLI use.
 
 State: every pipeline stage works end-to-end, validated live on
-blog.fontlab.com, with 50 tests and 5 wired exporters (WeasyPrint + Playwright
-fully validated locally).
+blog.fontlab.com, with 50 tests and 4 wired exporters (Playwright + native
+reveal fully validated locally).
+
+## 2026-05-22 — decktape→reveal rename + drop WeasyPrint
+
+- Replaced the Node DeckTape exporter with a native `reveal` exporter
+  (Playwright steps reveal.js, pypdf merges one PDF page per slide); no Node/
+  decktape toolchain.
+- Removed WeasyPrint entirely: exporter, entry point, optional dependency, and
+  all spec/doc/example references. Paged-media recommendation is now Vivliostyle.
+- Updated `classify._STRATEGY_ORDER` (no weasyprint); tests now gate on
+  Playwright availability and synthesize fixtures via pypdf blank pages.

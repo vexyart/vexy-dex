@@ -49,8 +49,8 @@ def test_plan_breaks_golden():
     """Regression snapshot: a fixed layout must yield a stable plan (spec/23)."""
     els = [
         _el("h1", 0, 150),
-        _el("section", 600, 400),    # semantic start past 40% of stage
-        _el("img", 1100, 3300),      # ~3 screens => two interior overflow breaks
+        _el("section", 600, 400),  # semantic start past 40% of stage
+        _el("img", 1100, 3300),  # ~3 screens => two interior overflow breaks
     ]
     plan = plan_breaks(els, 1920, 1080)
     got = [(round(b.y), b.reason) for b in plan.breaks]

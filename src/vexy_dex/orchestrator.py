@@ -144,8 +144,12 @@ def build(source: Source, settings: Settings) -> list[DeckResult]:
             "framework": page.framework,
             "slides": plan.slide_count,
             "results": [
-                {"strategy": r.strategy.name, "ok": r.ok,
-                 "slides": r.slide_count, "error": r.error}
+                {
+                    "strategy": r.strategy.name,
+                    "ok": r.ok,
+                    "slides": r.slide_count,
+                    "error": r.error,
+                }
                 for r in results
             ],
         },

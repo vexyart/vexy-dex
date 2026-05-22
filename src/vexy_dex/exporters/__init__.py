@@ -38,7 +38,9 @@ def discover_exporters() -> dict[str, Exporter]:
     return out
 
 
-def select_exporters(requested: tuple[str, ...], order: tuple[str, ...]) -> list[Exporter]:
+def select_exporters(
+    requested: tuple[str, ...], order: tuple[str, ...]
+) -> list[Exporter]:
     """Resolve the requested strategy names into available exporters (spec/16).
 
     `requested` is authoritative. 'all' = every discovered exporter whose deps
@@ -46,17 +48,13 @@ def select_exporters(requested: tuple[str, ...], order: tuple[str, ...]) -> list
     """
     found = discover_exporters()
     if requested == ("all",):
-        names = [n for n in order if n in found] + [
-            n for n in found if n not in order
-        ]
+        names = [n for n in order if n in found] + [n for n in found if n not in order]
         return [found[n] for n in names if found[n].available()]
     selected: list[Exporter] = []
     for name in requested:
         if name not in found:
             from ..errors import UsageError
 
-            raise UsageError(
-                f"unknown strategy {name!r}; known: {sorted(found)}"
-            )
+            raise UsageError(f"unknown strategy {name!r}; known: {sorted(found)}")
         selected.append(found[name])
     return selected
