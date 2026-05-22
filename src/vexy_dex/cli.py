@@ -105,9 +105,26 @@ class VexyDex:
         return len(slides)
 
 
+def _annotate_help() -> None:
+    """Append the runtime-discovered strategies to `build`'s help (spec/04)."""
+    try:
+        from .exporters import discover_exporters
+
+        avail = [n for n, e in discover_exporters().items() if e.available()]
+        missing = [n for n, e in discover_exporters().items() if not e.available()]
+        note = f"\n\n  Available strategies: {', '.join(sorted(avail)) or 'none'}."
+        if missing:
+            note += f" Unavailable (install deps): {', '.join(sorted(missing))}."
+        note += "\n  Tip: put flag values after a `--` if Fire mistakes them for positionals."
+        VexyDex.build.__doc__ = (VexyDex.build.__doc__ or "") + note
+    except Exception:
+        pass
+
+
 def main() -> None:
     import fire
 
+    _annotate_help()
     try:
         result = fire.Fire(VexyDex)
         if isinstance(result, int):

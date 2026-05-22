@@ -29,7 +29,7 @@ links the chapter that specifies it. Order roughly follows the MVP staging in
 - [x] `VexyDex` class with `build`, `read`, `analyze`, `render`, `split` ([spec/04](spec/04.md))
 - [x] Flags: `--out --aspect --size --strategies --svg --vision --verbose --no-cache` ([spec/04](spec/04.md))
 - [x] Exit codes 0/1/2 + per-strategy summary table ([spec/04](spec/04.md), [spec/22](spec/22.md))
-- [~] `--help` (Fire-generated); document the `--` caveat; list discovered strategies ([spec/04](spec/04.md))
+- [x] `--help` lists runtime-discovered (un)available strategies + documents the `--` caveat ([spec/04](spec/04.md))
 
 ## Stage 1 — Readers
 
@@ -60,7 +60,7 @@ links the chapter that specifies it. Order roughly follows the MVP staging in
 - [x] Playwright bounding-box probe JS at stage size ([spec/09](spec/09.md))
 - [x] `plan_breaks`: semantic-snap, overflow, giant-split, tolerance ([spec/09](spec/09.md))
 - [x] Dedupe/sort breaks; screen-count fallback for div-soup ([spec/09](spec/09.md))
-- [ ] Golden `SlidePlan` snapshots for fixtures ([spec/23](spec/23.md))
+- [x] Golden `SlidePlan` snapshot regression test ([spec/23](spec/23.md))
 
 ## Stage 2 — Vision (optional)
 
