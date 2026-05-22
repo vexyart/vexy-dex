@@ -18,10 +18,16 @@ with `DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib` (or run via `../test.sh`).
 
 ## Scripts
 
-| Script | Input | Engines | Notes |
-|---|---|---|---|
-| `build_local.py` | `tests/fixtures/generic_article/index.html` | weasyprint | Offline, no network; the quickest smoke test. |
-| `webflow_retro_poster.py` | `https://www.vexy.art/lines/case-retro-poster/` (Webflow) | playwright + weasyprint | The canonical Webflow case. Expected output: [`expected/webflow_retro_poster.md`](expected/webflow_retro_poster.md). |
+| Script | Input | Kind | Result (plan → pw/weasy) | Expected |
+|---|---|---|---|---|
+| `build_local.py` | `tests/fixtures/generic_article/index.html` | offline fixture | — | quickest smoke test, no network |
+| `webflow_retro_poster.py` | `vexy.art/lines/case-retro-poster/` | Webflow case study | 33 → 18 / 26 | [md](expected/webflow_retro_poster.md) |
+| `webflow_fontlab_home.py` | `fontlab.com/` | Webflow homepage | 3 → 2 / 4 | [md](expected/webflow_fontlab_home.md) |
+| `webflow_transtype.py` | `fontlab.com/font-converter/transtype/` | Webflow (div-sections) | 18 → 14 / 17 | [md](expected/webflow_transtype.md) |
+| `mkdocs_blog_post.py` | `blog.fontlab.com/2026/05/07/…` | MkDocs article | 7 → 6 / 12 | [md](expected/mkdocs_blog_post.md) |
+
+`pw` = playwright, `weasy` = weasyprint. Counts are representative (they depend
+on the live page + engine metrics). All live examples share `_runner.py`.
 
 ## Run
 

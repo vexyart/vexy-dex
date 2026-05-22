@@ -33,6 +33,27 @@ def test_webflow_selects_sections_drops_chrome(tmp_path, fixtures):
     assert "slide-dark-bg" in result, "dark hero should be tagged dark"
 
 
+def test_webflow_divsection_page_uses_plan_fallback(tmp_path):
+    """Live Webflow pages use <div class=section>, not <section>; fall back to
+    distributing blocks into the planned slide count (regression for transtype)."""
+    blocks = "".join(
+        f'<div class="section s{i}"><h2>Block {i}</h2><p>x</p></div>' for i in range(8)
+    )
+    html = (
+        '<html data-wf-page="p"><body><div class="page-wrapper">'
+        f'<nav class="w-nav">chrome</nav>{blocks}'
+        '<footer class="footer">chrome</footer></div></body></html>'
+    )
+    from vexy_dex.model import Break
+
+    # A 6-slide plan exercises the block-distribution fallback target.
+    plan = SlidePlan(1920, 1080, [Break(float(i) * 1080, "section") for i in range(1, 6)])
+    out = WebflowImporter().transform(_page(tmp_path, html), plan)
+    result = out.html_path.read_text()
+    assert result.count("<section") >= 4, "div-section page should yield many slides"
+    assert "chrome" not in result, "nav/footer chrome dropped"
+
+
 def test_mkdocs_extracts_content_keeps_code(tmp_path, fixtures):
     html = (fixtures / "mkdocs_sample" / "index.html").read_text()
     page = _page(tmp_path, html)

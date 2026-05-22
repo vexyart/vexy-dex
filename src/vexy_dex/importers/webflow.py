@@ -22,6 +22,12 @@ from ._common import write_normalized
 # Chrome keywords lifted verbatim from compiler.py:is_slide_section.
 _CHROME_KEYWORDS = ("menu", "nav", "footer", "mask", "header", "banner")
 
+# Selectors for page chrome to drop before the block-split fallback.
+_CHROME_SELECTORS = [
+    "nav", "header", "footer", ".navbar", ".w-nav",
+    "[class*='menu']", "[class*='footer']", "[class*='banner']",
+]
+
 
 def _classes_str(node) -> str:
     return " ".join(node.get("class") or []).lower() + " " + (node.get("id") or "").lower()
@@ -76,9 +82,15 @@ class WebflowImporter:
             ]
             sections.append(section.extract())
 
-        if not sections:  # not section-shaped; fall back to a generic split
-            from .generic import GenericImporter
-
-            return GenericImporter().transform(page, plan)
+        if len(sections) < 2:
+            # Live Webflow pages often use <div class="section"> rather than
+            # <section> tags, so tag-based selection finds too few. Drop chrome
+            # and distribute the real DOM blocks into the planned slide count
+            # (sectionize._content_root descends the Webflow page-wrapper). This
+            # beats trafilatura, which collapses marketing pages.
+            soup2 = dom.parse(raw)
+            dom.drop_chrome(soup2, _CHROME_SELECTORS)
+            body2 = soup2.body or soup2
+            sections = dom.sectionize(str(body2), target=max(plan.slide_count, 2))
 
         return write_normalized(page, dom.wrap_reveal(sections))
