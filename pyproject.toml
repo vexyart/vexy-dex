@@ -56,7 +56,7 @@ generic = "vexy_dex.importers.generic:GenericImporter"
 weasyprint = "vexy_dex.exporters.weasyprint:WeasyPrintExporter"
 playwright = "vexy_dex.exporters.playwright:PlaywrightExporter"
 vivliostyle = "vexy_dex.exporters.vivliostyle:VivliostyleExporter"
-decktape = "vexy_dex.exporters.decktape:DeckTapeExporter"
+reveal = "vexy_dex.exporters.reveal:RevealExporter"
 prince = "vexy_dex.exporters.prince:PrinceExporter"
 
 [dependency-groups]

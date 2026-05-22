@@ -20,10 +20,10 @@ _RULES: list[tuple[str, list[str]]] = [
 
 # Strategy order recommendation per framework (spec/05, 08).
 _STRATEGY_ORDER: dict[str, tuple[str, ...]] = {
-    "webflow": ("playwright", "decktape", "weasyprint"),
+    "webflow": ("playwright", "reveal", "weasyprint"),
     "mkdocs-material": ("weasyprint", "vivliostyle", "playwright"),
     "docusaurus": ("weasyprint", "vivliostyle", "playwright"),
-    "framer": ("playwright", "decktape"),
+    "framer": ("playwright", "reveal"),
     "bubble": ("playwright", "weasyprint"),
     "generic": ("weasyprint", "playwright", "vivliostyle"),
 }

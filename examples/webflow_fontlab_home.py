@@ -14,4 +14,4 @@ from __future__ import annotations
 from _runner import run
 
 if __name__ == "__main__":
-    run("https://www.fontlab.com/", "fontlab-home")
+    run("https://fontlab-com.webflow.io/", "fontlab-home")

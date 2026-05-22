@@ -1,10 +1,19 @@
 # this_file: examples/_runner.py
 """Shared helper for the example scripts: build a URL and print a summary.
 
-Keeps each example script to a few lines. On macOS, WeasyPrint needs Homebrew
-Pango on the dyld path:
+Keeps each example script to a few lines. The default `strategies="all"` runs
+every engine whose runtime deps are present and silently skips the rest
+(`available()` gate), so the example output reflects what's actually installed:
 
-    DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib uv run examples/<script>.py
+  - playwright  → needs `playwright install chromium` (usually present)
+  - weasyprint  → needs GLib/Pango; on macOS prefix the run with
+                  DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib (else skipped)
+  - vivliostyle → needs Node + `npm i -g @vivliostyle/cli` (else skipped)
+  - decktape    → needs Node + `npm i -g decktape` (else skipped)
+  - prince      → opt-in proprietary binary via [engines].prince_path (else skipped)
+
+Pass an explicit comma list to force specific strategies (and to surface a loud
+error if a forced engine's deps are missing).
 """
 
 from __future__ import annotations
@@ -19,8 +28,7 @@ from vexy_dex.settings import build_settings
 OUTPUT_ROOT = Path(__file__).parent / "output"
 
 
-def run(url: str, name: str, strategies: str = "playwright,weasyprint",
-        size: str = "1920x1080") -> None:
+def run(url: str, name: str, strategies: str = "all", size: str = "1920x1080") -> None:
     out = OUTPUT_ROOT / name
     settings = build_settings(out=str(out), strategies=strategies, size=size)
     results = build(Source.parse(url), settings)

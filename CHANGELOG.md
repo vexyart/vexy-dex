@@ -4,6 +4,38 @@
 
 ## Unreleased
 
+### Changed
+
+- `examples/_runner.py` now defaults to `strategies="all"`, so examples exercise
+  every engine whose deps are installed (playwright/decktape/prince here) and
+  cleanly skip the rest via `available()`, instead of force-running a hardcoded
+  `playwright,weasyprint` pair (which surfaced a loud GLib error for weasyprint).
+
+### Spec — decouple the slide IR from reveal.js (planning)
+
+The normalized IR was reveal-shaped (`.reveal > .slides`) emitted by importers,
+so the five strategies diverged only by PDF engine, not by framework. Revised
+the spec to make the **chassis** (reveal / paged / impress / marp) a per-strategy
+stage-4 choice over a framework-neutral `<section class="slide">` IR, so genuine
+alternatives to reveal are possible. Updated spec/03, spec/11, spec/15, spec/16,
+spec/19 and added the refactor + `impress`/`marp` tasks to TODO.md. Code refactor
+is tracked, not yet implemented.
+
+### Fixed
+
+- Reveal chassis now disables all reveal.js UI chrome (controls, progress,
+  slide-number, help/pause overlays) via `Reveal.initialize` flags plus a CSS
+  guard — slides are destined for PDF/SVG and must not show navigation buttons
+  (`preexport._bundle_reveal`, spec/15).
+
+- Content-extracting importers (mkdocs-material, docusaurus, generic) now carry
+  the source page's stylesheet `<link>`s and `<style>` blocks into the reveal
+  chassis via the new `dom.head_styles` helper. Previously `wrap_reveal` emitted
+  an empty `<head>`, so the localized framework/highlight CSS (spec/07, spec/13)
+  never loaded and decks rendered as unstyled prose.
+- `examples/webflow_fontlab_8.py`: corrected a malformed `httpshttps://` URL and
+  the copy-pasted header/docstring (was duplicating the homepage example).
+
 ### Added — initial implementation
 
 The full six-stage pipeline, implemented and tested end-to-end.

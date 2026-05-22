@@ -29,11 +29,13 @@ def test_paged_strategy_injects_page_css(tmp_path):
     assert job.extra_css and job.extra_css[0].exists()
 
 
-def test_decktape_strategy_bundles_revealjs(tmp_path):
+def test_reveal_strategy_bundles_revealjs(tmp_path):
     job = preexport.prepare(_page(tmp_path), SlidePlan(1280, 720),
-                            Strategy("decktape", "decktape"))
+                            Strategy("reveal", "reveal"))
     text = job.html_path.read_text()
     assert "reveal/reveal.js" in text, "reveal.js script should be injected"
     assert "Reveal.initialize" in text and "width:1280" in text
+    # Slides are for print: no nav controls, progress, slide numbers or fragments.
+    assert "controls:false" in text and "fragments:false" in text
     bundle = job.html_path.parent / "reveal"
     assert (bundle / "reveal.js").exists() and (bundle / "reveal.css").exists()

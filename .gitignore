@@ -50,10 +50,9 @@ __version__.py
 *.so
 *.spec
 *$py.class
-/site
+/.omc
 /out/
-out/
-examples/output/
+/site
 activemq-data/
 build/
 celerybeat-schedule
@@ -71,6 +70,7 @@ downloads/
 eggs/
 env.bak/
 env/
+examples/output/
 htmlcov/
 instance/
 ipython_config.py
@@ -82,6 +82,7 @@ marimo/_lsp/
 marimo/_static/
 mnesia/
 nosetests.xml
+out/
 parts/
 pip-delete-this-directory.txt
 pip-log.txt
@@ -89,6 +90,7 @@ private/
 profile_default/
 rabbitmq-data/
 rabbitmq/
+ruvector.db
 sdist/
 share/python-wheels/
 target/

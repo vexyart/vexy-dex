@@ -22,7 +22,8 @@ class GenericImporter:
             return page
         body_html = self._extract(raw)
         sections = dom.sectionize(body_html, target=plan.slide_count)
-        return write_normalized(page, dom.wrap_reveal(sections))
+        head = dom.head_styles(dom.parse(raw))
+        return write_normalized(page, dom.wrap_reveal(sections, head))
 
     def _extract(self, html: str) -> str:
         try:

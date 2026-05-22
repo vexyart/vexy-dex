@@ -32,4 +32,4 @@ class MkdocsImporter:
         sections = dom.sectionize(str(content), target=plan.slide_count)
         for sec in sections:
             sec["class"] = [*(sec.get("class") or []), "slide-light-bg"]
-        return write_normalized(page, dom.wrap_reveal(sections))
+        return write_normalized(page, dom.wrap_reveal(sections, dom.head_styles(soup)))

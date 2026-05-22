@@ -73,7 +73,9 @@ def split_by_heading(
     sections: list[Tag] = []
     current = soup.new_tag("section")
 
-    children = [c for c in container.children if getattr(c, "name", None) or str(c).strip()]
+    children = [
+        c for c in container.children if getattr(c, "name", None) or str(c).strip()
+    ]
     for child in children:
         name = getattr(child, "name", None)
         if name in levels and current.contents:
@@ -121,7 +123,9 @@ def split_to_count(container: Tag, target: int) -> list[Tag]:
     return sections
 
 
-def sectionize(content_html: str, target: int, levels: tuple[str, ...] = ("h1", "h2")) -> list[Tag]:
+def sectionize(
+    content_html: str, target: int, levels: tuple[str, ...] = ("h1", "h2")
+) -> list[Tag]:
     """Split content into slides, reconciling headings with the SlidePlan target.
 
     Try heading-based splitting first. If it under-segments badly relative to
@@ -153,13 +157,39 @@ def _content_root(content_html: str) -> Tag:
             return root
 
 
-def wrap_reveal(sections: list[Tag]) -> str:
-    """Wrap a list of <section> slides in the canonical reveal chassis (spec/11)."""
+def head_styles(soup: BeautifulSoup) -> list[Tag]:
+    """Stylesheet links and <style> blocks from a source document's <head>.
+
+    Importers that extract a content fragment lose the page's CSS; carrying these
+    nodes into the reveal chassis keeps the localized stylesheets (spec/07) — the
+    framework theme, syntax-highlight CSS, fonts — applying to the slides.
+    """
+    head = soup.head
+    if head is None:
+        return []
+    nodes: list[Tag] = []
+    for node in head.find_all(["link", "style"]):
+        rel = " ".join(node.get("rel") or []).lower() if node.name == "link" else ""
+        if node.name == "style" or "stylesheet" in rel:
+            nodes.append(node)
+    return nodes
+
+
+def wrap_reveal(sections: list[Tag], head_nodes: list[Tag] | None = None) -> str:
+    """Wrap a list of <section> slides in the canonical reveal chassis (spec/11).
+
+    `head_nodes` (from `head_styles`) are copied into the chassis <head> so the
+    source page's stylesheets keep applying to the extracted content.
+    """
     soup = BeautifulSoup(
         '<!doctype html><html><head><meta charset="utf-8"></head>'
         '<body><div class="reveal"><div class="slides"></div></div></body></html>',
         "lxml",
     )
+    head = soup.head
+    assert head is not None
+    for node in head_nodes or []:
+        head.append(node.extract() if node.parent else node)
     slides = soup.select_one("div.slides")
     assert slides is not None
     for sec in sections:

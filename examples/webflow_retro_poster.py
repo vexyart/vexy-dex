@@ -31,7 +31,7 @@ from vexy_dex.model import Source
 from vexy_dex.orchestrator import build
 from vexy_dex.settings import build_settings
 
-URL = "https://www.vexy.art/lines/case-retro-poster/"
+URL = "https://vexy-art.webflow.io/lines/case-retro-poster"
 OUT = Path(__file__).parent / "output" / "retro-poster"
 
 

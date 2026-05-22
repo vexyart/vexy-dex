@@ -87,7 +87,23 @@ links the chapter that specifies it. Order roughly follows the MVP staging in
 - [x] Parameterized paged-media stylesheet template ([spec/15](spec/15.md))
 - [x] Reconcile SlidePlan with structure: plan-driven `sectionize`/`split_to_count` fallback when heading-splitting under-segments ([spec/11](spec/11.md), [spec/15](spec/15.md))
 - [x] Bundle reveal.js 5.1 (`assets/reveal/`) and inject it for the DeckTape path with a stage-sized `Reveal.initialize` ([spec/15](spec/15.md))
+- [x] Disable all reveal UI chrome (controls/progress/slide-number/help/pause) in the reveal chassis — slides are for print, not navigation ([spec/15](spec/15.md))
 - [x] Emit per-strategy `RenderJob` ([spec/15](spec/15.md), [spec/03](spec/03.md))
+
+## Framework chassis — real alternatives to reveal (refactor)
+
+The reveal wrapper is currently emitted by importers, baking one framework into
+the IR; this makes the five strategies differ only by PDF engine. Decouple so
+the chassis is a per-strategy stage-4 choice and genuine framework divergence
+becomes possible ([spec/11](spec/11.md), [spec/15](spec/15.md), [spec/16](spec/16.md)).
+
+- [ ] Make the normalized IR framework-neutral: importers emit a flat `<section class="slide">` list, **not** `.reveal > .slides` ([spec/11](spec/11.md))
+- [ ] Move reveal wrapping out of importers into a `reveal` chassis in the pre-exporter; `dom.wrap_reveal` becomes the chassis helper ([spec/15](spec/15.md))
+- [ ] Add a `paged` chassis (neutral sections + `@page`/break CSS) as the default for weasyprint/vivliostyle/prince/playwright ([spec/15](spec/15.md))
+- [ ] Add `chassis` field to `Strategy`; map each strategy to its chassis ([spec/03](spec/03.md), [spec/16](spec/16.md))
+- [ ] `impress` chassis: wrap neutral slides in `#impress > .step`, bundle impress.js (localized), drive via DeckTape `impress` key, chrome off ([spec/15](spec/15.md), [spec/19](spec/19.md))
+- [ ] `marp` chassis + `marp-cli` exporter: sections → Markdown deck → native PDF ([spec/16](spec/16.md), [spec/19](spec/19.md))
+- [ ] Tests: one neutral IR fixture rendered through ≥2 chassis yields visibly different decks (the divergence guarantee) ([spec/23](spec/23.md))
 
 ## Stage 5 — Exporters
 

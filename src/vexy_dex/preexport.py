@@ -8,7 +8,7 @@ from importlib.resources import files
 from .model import PageDoc, RenderJob, SlidePlan, Strategy
 
 # Strategies that consume a full reveal.js deck rather than a paged document.
-_REVEAL_STRATEGIES = {"decktape"}
+_REVEAL_STRATEGIES = {"reveal"}
 
 _PAGED_CSS = """\
 @page {{ size: {w}px {h}px; margin: 0; }}
@@ -40,8 +40,8 @@ def _bundle_reveal(html: str, strat_dir, plan: SlidePlan) -> str:
     """Turn normalized reveal HTML into a self-contained reveal.js deck (spec/15).
 
     Copies the vendored reveal.js 5.1 dist next to the input and injects the
-    stylesheet/script with a stage-sized `Reveal.initialize`, so DeckTape (and
-    the preview) get a real, offline deck.
+    stylesheet/script with a stage-sized `Reveal.initialize`, so the reveal
+    exporter (and the preview) get a real, offline deck.
     """
     dst = strat_dir / "reveal"
     dst.mkdir(parents=True, exist_ok=True)
@@ -53,11 +53,15 @@ def _bundle_reveal(html: str, strat_dir, plan: SlidePlan) -> str:
         '<link rel="stylesheet" href="reveal/reveal.css">'
         '<link rel="stylesheet" href="reveal/theme.css">'
         f"<style>{_THEME_CSS}</style>"
+        # Belt-and-braces: hide any reveal UI chrome even if a plugin re-adds it.
+        "<style>.reveal .controls,.reveal .progress,.reveal .slide-number,"
+        ".reveal .pause-overlay,.reveal .speaker-notes{display:none!important}</style>"
     )
     tail = (
         '<script src="reveal/reveal.js"></script>'
-        f"<script>Reveal.initialize({{width:{plan.stage_w},"
-        f"height:{plan.stage_h},margin:0,controls:false}});</script>"
+        f"<script>Reveal.initialize({{width:{plan.stage_w},height:{plan.stage_h},"
+        "margin:0,controls:false,progress:false,slideNumber:false,fragments:false,"
+        "controlsTutorial:false,hash:false,help:false,transition:'none'});</script>"
     )
     if "</head>" in html:
         html = html.replace("</head>", head + "</head>", 1)
