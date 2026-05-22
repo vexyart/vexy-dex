@@ -10,6 +10,7 @@ stop a render.
 from __future__ import annotations
 
 import hashlib
+import re
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
@@ -20,6 +21,8 @@ from loguru import logger
 
 _ASSET_TAGS = {"link": "href", "script": "src", "img": "src", "source": "src"}
 _SKIP_PREFIXES = ("data:", "mailto:", "javascript:", "tel:", "#")
+_CSS_URL = re.compile(r"""url\(\s*['"]?([^'")]+)['"]?\s*\)""")
+_CSS_IMPORT = re.compile(r"""@import\s+['"]([^'"]+)['"]""")
 
 
 def _safe_name(url: str) -> str:
@@ -75,10 +78,60 @@ def _fetch_one(client, tag, attr, url, asset_dir: Path) -> None:
             logger.warning("asset {} -> HTTP {}", url, resp.status_code)
             return
         name = _safe_name(url)
-        (asset_dir / name).write_bytes(resp.content)
+        is_css = tag.name == "link" or "css" in resp.headers.get("content-type", "")
+        if is_css:
+            css = _localize_css(client, resp.text, url, asset_dir, depth=2)
+            (asset_dir / name).write_text(css, encoding="utf-8")
+        else:
+            (asset_dir / name).write_bytes(resp.content)
         tag[attr] = f"assets/{name}"
     except Exception as e:  # network flake on one asset must not abort the page
         logger.warning("failed to localize asset {}: {}", url, e)
+
+
+def _localize_css(client, css: str, css_url: str, asset_dir: Path, *, depth: int) -> str:
+    """Download url()/@import targets in a stylesheet and rewrite to local refs.
+
+    Bounded recursion (depth) for @import chains. Failures leave the original
+    reference in place rather than aborting (offline is best-effort, spec/07).
+    """
+    fetched: dict[str, str] = {}
+
+    def grab(ref: str, *, as_css: bool) -> str | None:
+        if ref.startswith(_SKIP_PREFIXES):
+            return None
+        absolute = urljoin(css_url, ref)
+        if not absolute.startswith(("http://", "https://")):
+            return None
+        if absolute in fetched:
+            return fetched[absolute]
+        try:
+            r = client.get(absolute)
+            if r.status_code != 200:
+                return None
+            name = _safe_name(absolute)
+            if as_css and depth > 0:
+                text = _localize_css(client, r.text, absolute, asset_dir, depth=depth - 1)
+                (asset_dir / name).write_text(text, encoding="utf-8")
+            else:
+                (asset_dir / name).write_bytes(r.content)
+            fetched[absolute] = name
+            return name
+        except Exception as e:
+            logger.debug("css asset {} skipped: {}", absolute, e)
+            return None
+
+    def repl_url(m: re.Match) -> str:
+        name = grab(m.group(1), as_css=False)
+        return f"url({name})" if name else m.group(0)
+
+    def repl_import(m: re.Match) -> str:
+        name = grab(m.group(1), as_css=True)
+        return f'@import "{name}"' if name else m.group(0)
+
+    css = _CSS_IMPORT.sub(repl_import, css)
+    css = _CSS_URL.sub(repl_url, css)
+    return css
 
 
 def content_hash(html_path: Path, asset_dir: Path) -> str:

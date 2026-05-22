@@ -45,7 +45,7 @@ links the chapter that specifies it. Order roughly follows the MVP staging in
 - [x] Tier 1: `ThreadPoolExecutor` tag-asset downloader + path rewrite ([spec/07](spec/07.md))
 - [ ] Tier 2: `pywebcopy` static mirror integration ([spec/07](spec/07.md))
 - [ ] Tier 3: `monolith` freeze (Chromium dump-dom | monolith) ([spec/07](spec/07.md))
-- [ ] CSS `url()`/`@import`/`@font-face` localization ([spec/07](spec/07.md))
+- [x] CSS `url()`/`@import` localization (bounded recursion; fonts/bg images) ([spec/07](spec/07.md))
 - [x] Path sanitation (hash long names, no traversal, stay under out/) ([spec/07](spec/07.md))
 - [x] Compute `PageDoc.content_hash` over html + asset manifest ([spec/07](spec/07.md), [spec/21](spec/21.md))
 
