@@ -67,6 +67,7 @@ source = "vcs"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/vexy_dex"]
+artifacts = ["src/vexy_dex/assets/**"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

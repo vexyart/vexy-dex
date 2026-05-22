@@ -3,7 +3,12 @@
 
 from __future__ import annotations
 
+from importlib.resources import files
+
 from .model import PageDoc, RenderJob, SlidePlan, Strategy
+
+# Strategies that consume a full reveal.js deck rather than a paged document.
+_REVEAL_STRATEGIES = {"decktape"}
 
 _PAGED_CSS = """\
 @page {{ size: {w}px {h}px; margin: 0; }}
@@ -31,6 +36,40 @@ def paged_css(stage_w: int, stage_h: int) -> str:
     return _PAGED_CSS.format(w=stage_w, h=stage_h)
 
 
+def _bundle_reveal(html: str, strat_dir, plan: SlidePlan) -> str:
+    """Turn normalized reveal HTML into a self-contained reveal.js deck (spec/15).
+
+    Copies the vendored reveal.js 5.1 dist next to the input and injects the
+    stylesheet/script with a stage-sized `Reveal.initialize`, so DeckTape (and
+    the preview) get a real, offline deck.
+    """
+    dst = strat_dir / "reveal"
+    dst.mkdir(parents=True, exist_ok=True)
+    src = files("vexy_dex").joinpath("assets", "reveal")
+    for name in ("reveal.css", "reveal.js", "theme.css"):
+        (dst / name).write_bytes((src / name).read_bytes())
+
+    head = (
+        '<link rel="stylesheet" href="reveal/reveal.css">'
+        '<link rel="stylesheet" href="reveal/theme.css">'
+        f"<style>{_THEME_CSS}</style>"
+    )
+    tail = (
+        '<script src="reveal/reveal.js"></script>'
+        f"<script>Reveal.initialize({{width:{plan.stage_w},"
+        f"height:{plan.stage_h},margin:0,controls:false}});</script>"
+    )
+    if "</head>" in html:
+        html = html.replace("</head>", head + "</head>", 1)
+    else:
+        html = head + html
+    if "</body>" in html:
+        html = html.replace("</body>", tail + "</body>", 1)
+    else:
+        html = html + tail
+    return html
+
+
 def prepare(page: PageDoc, plan: SlidePlan, strategy: Strategy) -> RenderJob:
     """Build an engine-ready RenderJob for one strategy (spec/15).
 
@@ -46,16 +85,17 @@ def prepare(page: PageDoc, plan: SlidePlan, strategy: Strategy) -> RenderJob:
     theme_path = strat_dir / "_theme.css"
     theme_path.write_text(_THEME_CSS, encoding="utf-8")
 
-    # Inline the theme into the page so single-file engines render it offline.
     html = page.html_path.read_text(encoding="utf-8")
-    inject = f"<style>{_THEME_CSS}\n{paged_css(plan.stage_w, plan.stage_h)}</style>"
-    if "</head>" in html:
-        html = html.replace("</head>", inject + "</head>", 1)
+    if strategy.name in _REVEAL_STRATEGIES:
+        html = _bundle_reveal(html, strat_dir, plan)
     else:
-        html = inject + html
+        # Inline theme + paged CSS so single-file engines render it offline.
+        inject = f"<style>{_THEME_CSS}\n{paged_css(plan.stage_w, plan.stage_h)}</style>"
+        if "</head>" in html:
+            html = html.replace("</head>", inject + "</head>", 1)
+        else:
+            html = inject + html
     job_html = strat_dir / "_input.html"
-    # Asset refs in normalized html are ../raw/assets — rewrite for this dir depth.
-    html = html.replace("../raw/assets/", "../raw/assets/")
     job_html.write_text(html, encoding="utf-8")
 
     return RenderJob(

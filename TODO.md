@@ -86,8 +86,7 @@ links the chapter that specifies it. Order roughly follows the MVP staging in
 
 - [x] Parameterized paged-media stylesheet template ([spec/15](spec/15.md))
 - [x] Reconcile SlidePlan with structure: plan-driven `sectionize`/`split_to_count` fallback when heading-splitting under-segments ([spec/11](spec/11.md), [spec/15](spec/15.md))
-- [~] Theme injection done; bundle reveal.js for the DeckTape path ([spec/15](spec/15.md))
-- [ ] Bundle `assets/reveal.js` ([spec/15](spec/15.md))
+- [x] Bundle reveal.js 5.1 (`assets/reveal/`) and inject it for the DeckTape path with a stage-sized `Reveal.initialize` ([spec/15](spec/15.md))
 - [x] Emit per-strategy `RenderJob` ([spec/15](spec/15.md), [spec/03](spec/03.md))
 
 ## Stage 5 — Exporters

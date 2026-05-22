@@ -46,6 +46,12 @@ out because vexy-dex ships under MIT and must not link AGPL/GPL code (spec/24).
 - **Surya** — GPL-3.0: research-only, not a dependency.
 - **Prince** — proprietary: opt-in, user-supplied binary.
 
+## Vendored assets
+
+- **reveal.js 5.1** (MIT) — `src/vexy_dex/assets/reveal/` (reveal.css, reveal.js,
+  theme white.css). Bundled so the DeckTape input and reveal preview are
+  self-contained offline decks.
+
 ## Not a dependency
 
 - **webflow2reveal** — its `compiler.py` was copied and adapted into
