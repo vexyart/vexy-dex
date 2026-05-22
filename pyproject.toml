@@ -47,6 +47,9 @@ dynamic = "vexy_dex.readers.dynamic:DynamicReader"
 [project.entry-points."vexy_dex.importers"]
 webflow = "vexy_dex.importers.webflow:WebflowImporter"
 mkdocs-material = "vexy_dex.importers.mkdocs:MkdocsImporter"
+docusaurus = "vexy_dex.importers.others:DocusaurusImporter"
+bubble = "vexy_dex.importers.others:BubbleImporter"
+framer = "vexy_dex.importers.others:FramerImporter"
 generic = "vexy_dex.importers.generic:GenericImporter"
 
 [project.entry-points."vexy_dex.exporters"]

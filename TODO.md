@@ -79,7 +79,7 @@ links the chapter that specifies it. Order roughly follows the MVP staging in
 - [ ] After parity: retire the legacy `webflow2reveal` package ([spec/12](spec/12.md), [spec/24](spec/24.md))
 - [x] MkDocs Material importer — `md-content__inner`, heading split, chrome drop, preserve code/tables ([spec/13](spec/13.md))
 - [x] Generic importer — trafilatura extract + h2 split ([spec/14](spec/14.md))
-- [ ] Bubble / Docusaurus / Framer light rule sets ([spec/14](spec/14.md))
+- [x] Bubble / Docusaurus / Framer light rule sets ([spec/14](spec/14.md))
 - [x] Idempotency: re-running transform is a no-op on canonical input ([spec/11](spec/11.md))
 
 ## Stage 4 — Pre-exporters
@@ -123,7 +123,7 @@ links the chapter that specifies it. Order roughly follows the MVP staging in
 
 - [x] Vendor offline fixtures: webflow_sample, mkdocs_sample, generic_article, divsoup ([spec/23](spec/23.md))
 - [x] Unit tests for pure functions (classify, plan_breaks, dom helpers, config, split) ([spec/23](spec/23.md))
-- [~] Edge + error tests (have empty/giant/invisible/idempotent; add malformed/missing-engine/timeout) ([spec/23](spec/23.md))
+- [x] Edge + error tests (empty, malformed, no-headings, missing file, failed-strategy isolation) ([spec/23](spec/23.md))
 - [x] Integration: fixture → full pipeline → assert slide count + layout ([spec/23](spec/23.md))
 - [x] `examples/build_local.py` runnable; run by `test.sh` ([spec/23](spec/23.md))
 - [x] `./test.sh` (ruff + pytest + example smoke) ([spec/23](spec/23.md))
