@@ -29,7 +29,7 @@ class MkdocsImporter:
         dom.drop_chrome(soup, _CHROME)
         content = soup.select_one("article.md-content__inner") or soup.body or soup
         # Code blocks and tables ride along inside content — never stripped.
-        sections = dom.split_by_heading(content, levels=("h1", "h2"))
+        sections = dom.sectionize(str(content), target=plan.slide_count)
         for sec in sections:
             sec["class"] = [*(sec.get("class") or []), "slide-light-bg"]
         return write_normalized(page, dom.wrap_reveal(sections))

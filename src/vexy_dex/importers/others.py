@@ -32,7 +32,7 @@ class DocusaurusImporter:
         soup = dom.parse(raw)
         dom.drop_chrome(soup, _DOCUSAURUS_CHROME)
         content = soup.select_one(".theme-doc-markdown") or soup.body or soup
-        sections = dom.split_by_heading(content, levels=("h1", "h2"))
+        sections = dom.sectionize(str(content), target=plan.slide_count)
         return write_normalized(page, dom.wrap_reveal(sections))
 
 

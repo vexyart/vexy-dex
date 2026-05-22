@@ -34,6 +34,24 @@ def test_wrap_reveal_produces_chassis_and_marks_idempotent():
     assert dom.already_reveal(html)
 
 
+def test_sectionize_falls_back_to_count_when_no_headings():
+    # 8 block divs, no headings; plan wants 4 slides
+    body = "<body>" + "".join(f"<div>block {i}</div>" for i in range(8)) + "</body>"
+    sections = dom.sectionize(body, target=4)
+    assert len(sections) == 4, "no-heading content should split toward the plan"
+
+
+def test_sectionize_prefers_headings_when_present():
+    body = "<body><h2>A</h2><p>1</p><h2>B</h2><p>2</p><h2>C</h2><p>3</p></body>"
+    sections = dom.sectionize(body, target=3)
+    assert len(sections) == 3
+
+
+def test_split_to_count_single_block_is_one_slide():
+    body = dom.parse("<body><div>only</div></body>").body
+    assert len(dom.split_to_count(body, 5)) == 1
+
+
 def test_drop_chrome_removes_selectors():
     soup = dom.parse("<body><nav>x</nav><article>keep</article></body>")
     dom.drop_chrome(soup, ["nav"])

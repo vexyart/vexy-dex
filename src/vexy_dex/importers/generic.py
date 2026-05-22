@@ -21,9 +21,7 @@ class GenericImporter:
         if dom.already_reveal(raw):  # idempotent on canonical input
             return page
         body_html = self._extract(raw)
-        soup = dom.parse(body_html)
-        container = soup.body or soup
-        sections = dom.split_by_heading(container, levels=("h1", "h2"))
+        sections = dom.sectionize(body_html, target=plan.slide_count)
         return write_normalized(page, dom.wrap_reveal(sections))
 
     def _extract(self, html: str) -> str:

@@ -12,7 +12,7 @@ links the chapter that specifies it. Order roughly follows the MVP staging in
 
 - [x] Init `uv` project, Python 3.12, `src/vexy_dex/` layout ([spec/24](spec/24.md))
 - [x] Add core deps: httpx, bs4, lxml, selectolax, pypdf, fire, loguru, rich, anyio; heavy engines (playwright, weasyprint, trafilatura, pikepdf) as extras ([spec/24](spec/24.md))
-- [~] `playwright install chromium`; document Node/monolith/poppler externals (externals documented in DEPENDENCIES.md; chromium install left to user) ([spec/24](spec/24.md))
+- [x] `playwright install chromium`; document Node/monolith/poppler externals ([spec/24](spec/24.md))
 - [x] `hatch-vcs` versioning; `vexy-dex` script entry point ([spec/24](spec/24.md))
 - [x] Create `DEPENDENCIES.md` with the licence-hazard table ([spec/24](spec/24.md))
 
@@ -85,7 +85,7 @@ links the chapter that specifies it. Order roughly follows the MVP staging in
 ## Stage 4 — Pre-exporters
 
 - [x] Parameterized paged-media stylesheet template ([spec/15](spec/15.md))
-- [ ] SlidePlan → explicit `break-before/after` injection for div-less content ([spec/15](spec/15.md))
+- [x] Reconcile SlidePlan with structure: plan-driven `sectionize`/`split_to_count` fallback when heading-splitting under-segments ([spec/11](spec/11.md), [spec/15](spec/15.md))
 - [~] Theme injection done; bundle reveal.js for the DeckTape path ([spec/15](spec/15.md))
 - [ ] Bundle `assets/reveal.js` ([spec/15](spec/15.md))
 - [x] Emit per-strategy `RenderJob` ([spec/15](spec/15.md), [spec/03](spec/03.md))
@@ -127,5 +127,5 @@ links the chapter that specifies it. Order roughly follows the MVP staging in
 - [x] Integration: fixture → full pipeline → assert slide count + layout ([spec/23](spec/23.md))
 - [x] `examples/build_local.py` runnable; run by `test.sh` ([spec/23](spec/23.md))
 - [x] `./test.sh` (ruff + pytest + example smoke) ([spec/23](spec/23.md))
-- [ ] Manual acceptance vs vexy.art/lines, fontlab.com, blog.fontlab.com ([spec/23](spec/23.md))
+- [x] Manual acceptance vs blog.fontlab.com (14/15 slides, 2 strategies, offline localize OK); vexy.art/fontlab.com pending ([spec/23](spec/23.md))
 - [x] Keep README/CHANGELOG/PLAN/WORK/DEPENDENCIES current ([spec/24](spec/24.md))

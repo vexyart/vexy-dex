@@ -90,6 +90,69 @@ def split_by_heading(
     return sections
 
 
+def split_to_count(container: Tag, target: int) -> list[Tag]:
+    """Distribute a container's top-level block children into ~`target` slides.
+
+    Fallback for content the heading splitter under-segments (spec/11-12): when a
+    page has no usable heading hierarchy but the SlidePlan expects many slides,
+    chunk the block children into near-equal groups so the deck isn't one giant
+    slide.
+    """
+    soup = BeautifulSoup("", "lxml")
+    blocks = [c for c in container.children if getattr(c, "name", None)]
+    # If the container is a single wrapper, descend one level.
+    if len(blocks) == 1 and list(blocks[0].children):
+        inner = [c for c in blocks[0].children if getattr(c, "name", None)]
+        if len(inner) > 1:
+            blocks = inner
+    target = max(1, min(target, len(blocks)))
+    if target <= 1 or len(blocks) <= 1:
+        only = soup.new_tag("section")
+        only.append(container)
+        return [only]
+    per = -(-len(blocks) // target)  # ceil division
+    sections: list[Tag] = []
+    for i in range(0, len(blocks), per):
+        sec = soup.new_tag("section")
+        for b in blocks[i : i + per]:
+            sec.append(b.extract() if hasattr(b, "extract") else b)
+        if sec.contents:
+            sections.append(sec)
+    return sections
+
+
+def sectionize(content_html: str, target: int, levels: tuple[str, ...] = ("h1", "h2")) -> list[Tag]:
+    """Split content into slides, reconciling headings with the SlidePlan target.
+
+    Try heading-based splitting first. If it under-segments badly relative to
+    the plan (e.g. a blog index with no headings), fall back to distributing the
+    block children into ~`target` slides (spec/11-12 reconcile step).
+    """
+    by_heading = split_by_heading(_content_root(content_html), levels)
+    if target > len(by_heading) and len(by_heading) < max(2, target // 2):
+        by_count = split_to_count(_content_root(content_html), target)
+        if len(by_count) > len(by_heading):
+            return by_count
+    return by_heading
+
+
+def _content_root(content_html: str) -> Tag:
+    """Pick the element whose direct children are the real content blocks.
+
+    Descend through single-wrapper elements so headings nested one level inside a
+    container (e.g. `<article class=md-content__inner>`) are seen as boundaries.
+    """
+    root = parse(content_html).body or parse(content_html)
+    while True:
+        kids = [c for c in root.children if getattr(c, "name", None)]
+        if len(kids) == 1 and list(
+            c for c in kids[0].children if getattr(c, "name", None)
+        ):
+            root = kids[0]
+        else:
+            return root
+
+
 def wrap_reveal(sections: list[Tag]) -> str:
     """Wrap a list of <section> slides in the canonical reveal chassis (spec/11)."""
     soup = BeautifulSoup(
