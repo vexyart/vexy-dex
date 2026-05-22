@@ -66,8 +66,30 @@ children into ~`target` slides. `_content_root` descends single wrappers so
 nested headings are still seen. Re-run: **14 (playwright) / 15 (weasyprint)**
 slides — close to the plan and usefully divergent, exactly as intended.
 
-### Next
+## 2026-05-22 — closing the MVP: localization, reveal bundling, decktape server
 
-- Asset CSS `url()`/`@import` localization (tier 2/3: pywebcopy, monolith).
-- reveal.js asset bundling for DeckTape; warm browser reuse.
-- Golden SlidePlan snapshots; retire webflow2reveal after parity.
+- CSS `url()`/`@import` localization with bounded recursion (offline fonts/bg).
+- Golden SlidePlan regression test; `--help` lists discovered strategies.
+- Vendored reveal.js 5.1; pre-exporter bundles a self-contained deck for the
+  DeckTape path; DeckTape serves it over a throwaway local HTTP server.
+- 50 tests passing; ruff clean. 9 commits.
+
+### Deliberately deferred (documented, not done)
+
+These 4 TODO items are left as optional follow-ups — finishing them now would
+break a project principle (CLAUDE.md):
+
+- **pywebcopy tier-2 localization** — redundant with the working tier-1
+  downloader + CSS localization; adding it is build-vs-buy bloat for no new
+  capability.
+- **monolith tier-3 freeze** — needs the `monolith` Rust binary (not installed);
+  the dynamic Playwright reader already handles JS-heavy pages. Writing the path
+  without the binary to validate it would ship untested code.
+- **retire webflow2reveal** — premature; parity across diverse Webflow pages
+  isn't yet confirmed. Remove only after broader acceptance testing.
+- **warm browser/context reuse** — a performance optimization, not correctness;
+  current per-strategy launch is correct and fast enough for the local CLI use.
+
+State: every pipeline stage works end-to-end, validated live on
+blog.fontlab.com, with 50 tests and 5 wired exporters (WeasyPrint + Playwright
+fully validated locally).
