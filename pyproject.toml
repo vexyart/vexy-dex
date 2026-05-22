@@ -65,6 +65,10 @@ dev = ["pytest>=8", "pytest-cov>=5", "mypy>=1.11"]
 [tool.hatch.version]
 source = "vcs"
 
+[tool.hatch.build.hooks.vcs]
+# Git-tag-based semver written to a gitignored module at build time.
+version-file = "src/vexy_dex/__version__.py"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/vexy_dex"]
 artifacts = ["src/vexy_dex/assets/**"]
