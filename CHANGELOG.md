@@ -4,6 +4,77 @@
 
 ## Unreleased
 
+### Fixed
+
+- **Faithful rendering of designed pages — no more white-bg/margin override.**
+  The pre-exporter injected a neutral slide theme (`.slide { padding: 4% }`,
+  `.slide-light-bg { background:#fff }`) onto every deck, overriding the design of
+  Webflow/Framer pages. `preexport.theme_css(framework)` now returns only the
+  badge-hide rule for `webflow`/`framer` (keeping the page's own CSS) and the full
+  neutral theme for generic/Markdown decks; structural paging CSS is unchanged.
+  The Playwright exporter pins zero margins for a true vector "PDF screenshot"
+  (screen media, exact stage size, real backgrounds), and the paged CSS injects
+  `* { -webkit-print-color-adjust: exact; print-color-adjust: exact }` so colours
+  survive in Chromium and Prince (issue 104). Verified: the TransType page renders
+  its real red hero and green quote slides at 1280×720 instead of white-bg slides.
+  spec [17](spec/17.md) documents the full faithful-capture recipe and
+  [20](spec/20.md) the two SVG routes (PDF→SVG default vs browser-side DOM→SVG);
+  `TODO.md` tracks the deferred WebKit-native and DOM→SVG options.
+- **Webflow/Framer sectioning dropped real content, keeping only the footer.**
+  The `vexy-dexyjs` preprocessor selected slides via
+  `querySelectorAll('section, .section, …')`, which on many live Webflow pages
+  matches only stray footer/menu blocks carrying a `section` class token while
+  missing the actual content blocks (`<div class="tr-section1">`, `hero`, …). It
+  now prefers the content-bearing **top-level children** of the content root,
+  falling back to the explicit section selectors only for wrapper-nested layouts.
+  Verified on the TransType page: 2 footer-only sections → 14 real content
+  sections. (Rebuild `vexy-dexyjs` to refresh the vendored bundle.)
+
+### Changed
+
+- **Default stage is now 1280×720; size profiles renamed by resolution.** The
+  `[stage] aspect` / `--aspect` profiles are now `720p` (1280×720, **default**),
+  `1080p` (1920×1080), and `810p` (1440×810) — all 16:9; the previous
+  `16:9`/`4:3`/`a4-landscape` names are removed (`--size WxH` still overrides).
+  Updated `settings.py`, spec [04](spec/04.md)/[05](spec/05.md), README, and tests
+  (the short generic fixture now paginates to 2 slides at 720p).
+
+### Added
+
+- **`offline` fetch mode — single-file archiving** (issue 103, Phase 3). New
+  `OfflineReader` (`readers/offline.py`) shells out to `single-file` or `monolith`
+  (per `Settings.offline_tool`) to inline a page into one self-contained
+  `index.html` — the spec/07 Tier-3 path. Selected via `--fetch-mode offline`;
+  degrades to `localize` when the archiver is absent, like every other external
+  engine. Subprocess discipline (timeout, captured stderr, output check).
+- **Chrome extension scaffold for `vexy-dexyjs`** (issue 103, Phase 4). MV3
+  extension under `vexy-dexyjs/extension/` (`manifest.json`, `popup.html`,
+  `popup.js`, `README.md`) that injects the IIFE bundle into the active tab and
+  runs `preprocess()` in place. A `build:ext` esbuild target (wired into
+  `npm run build`) emits the git-ignored `extension/vexy-dexyjs.global.min.js`.
+- **Browser-native `live` fetch mode, now the default** (issue 103, Phase 2).
+  New `LiveReader` (`readers/live.py`) navigates the URL in the chosen browser
+  engine, captures the rendered DOM, and injects a `<base href>` at the page's
+  post-redirect origin — **without localizing any assets**. Fonts/CSS/images stay
+  online and load over the network during the probe, in-browser preprocessing,
+  and export, so slides render exactly as the live site serves them. Added
+  `Settings.fetch_mode` (`live` | `localize`), the `--fetch-mode` CLI flag, a
+  `[fetch]` config section, and the `live` reader entry point. The existing
+  `localize` path is preserved as an opt-in for reproducible offline archives;
+  `playwright` moved to a core dependency since `live` (the default) needs it.
+  Spec [06](spec/06.md)/[07](spec/07.md) updated; offline guarantee scoped to
+  `localize` mode. Verified end-to-end: `live` build of a served fixture produced
+  4 slide PDFs with zero localized asset dirs.
+- **`vexy-dexyjs` promoted to a publishable npm package** (issue 103, Phase 1).
+  Reworked `vexy-dexyjs/package.json` with `main`/`module`/`browser`/`unpkg`/
+  `jsdelivr`/`exports`/`types` and a multi-format esbuild build: `dist/index.mjs`
+  (ESM), `dist/index.cjs` (CJS), `dist/vexy-dexyjs.global.js` + `.min.js` (IIFE
+  global `VexyDexy`, for CDN/script-tag use). A separate `build:py` target keeps
+  refreshing the bundle vendored at `assets/vexy-dexyjs.js` (verified
+  byte-identical, so the Python pipeline is unaffected). Added hand-maintained
+  `index.d.ts`, a DOM-free smoke test (`npm test`), a generalized `README.md`,
+  and `publish.sh` (git-tag semver via `gitnextver` → npm). See `PLAN.md`.
+
 ### Changed
 
 - **Replaced the Node/DeckTape `decktape` strategy with a native `reveal`

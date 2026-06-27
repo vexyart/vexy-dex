@@ -67,8 +67,14 @@ class VexyDex:
         verbose: bool = False,
         no_cache: bool = False,
         browser_engine: str | None = None,
+        fetch_mode: str | None = None,
     ) -> int:
-        """Fetch -> analyze -> normalize -> render -> split, every strategy."""
+        """Fetch -> analyze -> normalize -> render -> split, every strategy.
+
+        `--fetch-mode live` (default) navigates the page and keeps its assets
+        online; `localize` downloads everything to disk; `offline` shells out to a
+        single-file archiver (single-file/monolith) for one self-contained file.
+        """
         _setup_logging(verbose)
         settings = build_settings(
             out=out,
@@ -80,6 +86,7 @@ class VexyDex:
             verbose=verbose,
             no_cache=no_cache,
             browser_engine=browser_engine,
+            fetch_mode=fetch_mode,
         )
         results = orchestrator.build(Source.parse(url), settings)
         return _summary(results)
@@ -90,16 +97,18 @@ class VexyDex:
         out: str = "out",
         verbose: bool = False,
         browser_engine: str | None = None,
+        fetch_mode: str | None = None,
     ) -> str:
-        """Stage 1 only: fetch and localize. Emits a PageDoc sidecar."""
+        """Stage 1 only: fetch the page. Emits a PageDoc sidecar."""
         _setup_logging(verbose)
         settings = build_settings(
             out=out,
             verbose=verbose,
             browser_engine=browser_engine,
+            fetch_mode=fetch_mode,
         )
         page = orchestrator.read_page(Source.parse(url), settings)
-        console.print(f"localized {url} -> {page.html_path} ({page.framework})")
+        console.print(f"read {url} -> {page.html_path} ({page.framework})")
         return str(page.html_path)
 
     def analyze(
@@ -111,6 +120,7 @@ class VexyDex:
         vision: bool = False,
         verbose: bool = False,
         browser_engine: str | None = None,
+        fetch_mode: str | None = None,
     ) -> int:
         """Stage 1+2: fetch, classify, and plan slide breaks."""
         _setup_logging(verbose)
@@ -121,6 +131,7 @@ class VexyDex:
             vision=vision,
             verbose=verbose,
             browser_engine=browser_engine,
+            fetch_mode=fetch_mode,
         )
         page = orchestrator.read_page(Source.parse(url), settings)
         plan = orchestrator.analyze_page(page, settings)

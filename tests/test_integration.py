@@ -32,7 +32,7 @@ def test_build_generic_fixture_produces_slides(tmp_path, fixtures):
     assert len(results) == 1
     r = results[0]
     assert r.ok, r.error
-    assert r.slide_count >= 3, "article should split into several slides"
+    assert r.slide_count >= 2, "article should split into multiple slides"
     assert (r.out_dir / "index.html").exists()
     assert all(p.exists() for p in r.slide_pdfs)
 

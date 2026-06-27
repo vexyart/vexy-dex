@@ -14,6 +14,8 @@ _REVEAL_STRATEGIES = {"reveal"}
 _PAGED_CSS = """\
 @page {{ size: {w}px {h}px; margin: 0; }}
 html, body {{ margin: 0; padding: 0; }}
+/* Preserve every background/colour when Chromium/Prince paint the PDF (issue 104). */
+* {{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
 section, .slide {{
   break-after: page;
   page-break-after: always;
@@ -33,12 +35,24 @@ _THEME_CSS = """\
 .w-webflow-badge { display: none !important; }  /* "Made in Webflow" badge */
 """
 
+# Designed pages ship their own complete styling; the neutral theme above would
+# override it with a white background and 4% padding, destroying fidelity. For
+# these frameworks we render the page's own CSS faithfully and only hide the
+# Webflow badge (issue: faithful Webflow/Framer rendering).
+_FAITHFUL_FRAMEWORKS = {"webflow", "framer"}
+_FAITHFUL_CSS = '.w-webflow-badge { display: none !important; }'
+
+
+def theme_css(framework: str) -> str:
+    """Cosmetic layer to inject: minimal for designed pages, neutral otherwise."""
+    return _FAITHFUL_CSS if framework in _FAITHFUL_FRAMEWORKS else _THEME_CSS
+
 
 def paged_css(stage_w: int, stage_h: int) -> str:
     return _PAGED_CSS.format(w=stage_w, h=stage_h)
 
 
-def _bundle_reveal(html: str, strat_dir, plan: SlidePlan) -> str:
+def _bundle_reveal(html: str, strat_dir, plan: SlidePlan, theme: str) -> str:
     """Turn normalized reveal HTML into a self-contained reveal.js deck (spec/15).
 
     Copies the vendored reveal.js 5.1 dist next to the input and injects the
@@ -54,7 +68,7 @@ def _bundle_reveal(html: str, strat_dir, plan: SlidePlan) -> str:
     head = (
         '<link rel="stylesheet" href="reveal/reveal.css">'
         '<link rel="stylesheet" href="reveal/theme.css">'
-        f"<style>{_THEME_CSS}</style>"
+        f"<style>{theme}</style>"
         # Belt-and-braces: hide any reveal UI chrome even if a plugin re-adds it.
         "<style>.reveal .controls,.reveal .progress,.reveal .slide-number,"
         ".reveal .pause-overlay,.reveal .speaker-notes{display:none!important}</style>"
@@ -76,7 +90,7 @@ def _bundle_reveal(html: str, strat_dir, plan: SlidePlan) -> str:
     return html
 
 
-def _bundle_impress(html: str, strat_dir, plan: SlidePlan) -> str:
+def _bundle_impress(html: str, strat_dir, plan: SlidePlan, theme: str) -> str:
     """Turn neutral HTML into a self-contained impress.js deck (spec/15)."""
     dst = strat_dir / "impress"
     dst.mkdir(parents=True, exist_ok=True)
@@ -88,7 +102,7 @@ def _bundle_impress(html: str, strat_dir, plan: SlidePlan) -> str:
     head = soup.head or soup.new_tag("head")
 
     style_text = (
-        f"{_THEME_CSS}\n"
+        f"{theme}\n"
         ".hint { display: none !important; }\n"
         f"#impress .step {{ width: {plan.stage_w}px; height: {plan.stage_h}px; box-sizing: border-box; transition: none !important; }}\n"
         "body { overflow: hidden; }\n"
@@ -124,7 +138,7 @@ def _bundle_impress(html: str, strat_dir, plan: SlidePlan) -> str:
     return str(soup)
 
 
-def _translate_to_marp(html: str, plan: SlidePlan) -> str:
+def _translate_to_marp(html: str, plan: SlidePlan, theme: str) -> str:
     """Translate neutral HTML into Marp Markdown format (spec/16)."""
     md = [
         "---",
@@ -144,7 +158,7 @@ def _translate_to_marp(html: str, plan: SlidePlan) -> str:
 
     # Standard theme + section sizing CSS for Marp
     theme_style = (
-        f"<style>{_THEME_CSS}\n"
+        f"<style>{theme}\n"
         f"section {{ width: {plan.stage_w}px; height: {plan.stage_h}px; padding: 0; margin: 0; box-sizing: border-box; }}\n"
         "</style>\n"
     )
@@ -180,10 +194,14 @@ def prepare(page: PageDoc, plan: SlidePlan, strategy: Strategy) -> RenderJob:
     strat_dir = work / strategy.name
     strat_dir.mkdir(parents=True, exist_ok=True)
 
+    # Designed pages (Webflow/Framer) render with their own CSS; others get the
+    # neutral slide theme (issue: faithful rendering).
+    theme = theme_css(page.framework)
+
     css_path = strat_dir / "_paged.css"
     css_path.write_text(paged_css(plan.stage_w, plan.stage_h), encoding="utf-8")
     theme_path = strat_dir / "_theme.css"
-    theme_path.write_text(_THEME_CSS, encoding="utf-8")
+    theme_path.write_text(theme, encoding="utf-8")
 
     html = page.html_path.read_text(encoding="utf-8")
 
@@ -201,22 +219,20 @@ def prepare(page: PageDoc, plan: SlidePlan, strategy: Strategy) -> RenderJob:
 
     if chassis == "reveal":
         reveal_html = dom.wrap_reveal(sections, head_nodes)
-        html = _bundle_reveal(reveal_html, strat_dir, plan)
+        html = _bundle_reveal(reveal_html, strat_dir, plan, theme)
         job_file = strat_dir / "_input.html"
         job_file.write_text(html, encoding="utf-8")
     elif chassis == "impress":
-        html = _bundle_impress(html, strat_dir, plan)
+        html = _bundle_impress(html, strat_dir, plan, theme)
         job_file = strat_dir / "_input.html"
         job_file.write_text(html, encoding="utf-8")
     elif chassis == "marp":
-        html = _translate_to_marp(html, plan)
+        html = _translate_to_marp(html, plan, theme)
         job_file = strat_dir / "_input.md"
         job_file.write_text(html, encoding="utf-8")
     else:  # "paged" chassis
         # Inline theme + paged CSS so single-file engines render it offline.
-        inject = (
-            f"<style>{_THEME_CSS}\n{paged_css(plan.stage_w, plan.stage_h)}</style>"
-        )
+        inject = f"<style>{theme}\n{paged_css(plan.stage_w, plan.stage_h)}</style>"
         if "</head>" in html:
             html = html.replace("</head>", inject + "</head>", 1)
         else:

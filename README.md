@@ -59,12 +59,12 @@ and their rationale are in [`RESEARCH.md`](RESEARCH.md).
 ## Planned usage
 
 ```bash
-# Everything, every available strategy, default 16:9
+# Everything, every available strategy, default 720p
 vexy-dexypy build https://www.vexy.art/lines/
 
 # Pick strategies and aspect ratio, also emit SVGs
 vexy-dexypy build https://blog.fontlab.com/ \
-    --strategies vivliostyle,playwright --aspect 4:3 --svg
+    --strategies vivliostyle,playwright --aspect 1080p --svg
 
 # Re-run a single stage on an existing PDF
 vexy-dexypy split out/lines/playwright/_combined.pdf --out out/lines/playwright --svg

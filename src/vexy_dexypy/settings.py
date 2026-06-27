@@ -13,14 +13,14 @@ from pathlib import Path
 
 from .errors import UsageError
 
-# Named aspect/size profiles → concrete (stage_w, stage_h). Default is 16:9.
+# Named size profiles → concrete (stage_w, stage_h), all 16:9. Default is 720p.
 PROFILES: dict[str, tuple[int, int]] = {
-    "16:9": (1920, 1080),
-    "4:3": (1440, 1080),
-    "a4-landscape": (1123, 794),
+    "720p": (1280, 720),
+    "1080p": (1920, 1080),
+    "810p": (1440, 810),
 }
 
-DEFAULT_SIZE = (1920, 1080)
+DEFAULT_SIZE = (1280, 720)
 
 
 def parse_size(size: str) -> tuple[int, int]:
@@ -28,7 +28,7 @@ def parse_size(size: str) -> tuple[int, int]:
     m = size.lower().replace("×", "x").split("x")
     if len(m) != 2:
         raise UsageError(
-            f"bad --size {size!r}; expected WxH like 1920x1080 "
+            f"bad --size {size!r}; expected WxH like 1280x720 "
             f"or an --aspect from {sorted(PROFILES)}"
         )
     try:
@@ -71,6 +71,11 @@ class Settings:
     vision_model: str = "minicpm-v-4.6"
     vision_endpoint: str = "http://localhost:11434"
     browser_engine: str = "playwright"
+    # "live": navigate the URL, keep assets online (default, issue 103);
+    # "localize": fetch + download all assets to disk for a reproducible archive;
+    # "offline": shell out to a single-file archiver for one self-contained file.
+    fetch_mode: str = "live"
+    offline_tool: str = "single-file"  # "single-file" | "monolith" (offline mode)
 
     def with_stage(self, w: int, h: int) -> Settings:
         return replace(self, stage_w=w, stage_h=h)
@@ -106,6 +111,7 @@ def build_settings(
     verbose: bool = False,
     no_cache: bool = False,
     browser_engine: str | None = None,
+    fetch_mode: str | None = None,
 ) -> Settings:
     """Resolve flags over config over defaults into a frozen Settings (spec/05)."""
     cfg = load_config()
@@ -115,6 +121,7 @@ def build_settings(
     vision_cfg = cfg.get("vision", {})
     eng_cfg = cfg.get("engines", {})
     browser_cfg = cfg.get("browser", {})
+    fetch_cfg = cfg.get("fetch", {})
 
     w, h = resolve_stage(
         aspect or stage_cfg.get("aspect"),
@@ -143,6 +150,8 @@ def build_settings(
         prince_path=eng_cfg.get("prince_path", ""),
         node_bin=eng_cfg.get("node_bin", "node"),
         browser_engine=browser_engine or browser_cfg.get("engine", "playwright"),
+        fetch_mode=fetch_mode or fetch_cfg.get("mode", "live"),
+        offline_tool=fetch_cfg.get("tool", "single-file"),
         vision_model=vision_cfg.get("model", "minicpm-v-4.6"),
         vision_endpoint=vision_cfg.get("endpoint", "http://localhost:11434"),
     )

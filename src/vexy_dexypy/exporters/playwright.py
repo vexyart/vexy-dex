@@ -37,6 +37,9 @@ class PlaywrightExporter:
                 with serving(page, job.html_path):
                     for css in job.extra_css:
                         page.add_style_tag(path=str(css))
+                    # Faithful "PDF screenshot": screen media (not print), exact
+                    # stage size, real backgrounds, zero margins. The page's own
+                    # CSS supplies the look (see preexport.theme_css).
                     page.emulate_media(media="screen")
                     page.pdf(
                         path=str(out),
@@ -44,6 +47,7 @@ class PlaywrightExporter:
                         height=f"{h}px",
                         print_background=True,
                         prefer_css_page_size=True,
+                        margin={"top": "0", "right": "0", "bottom": "0", "left": "0"},
                     )
                 browser.close()
         except Exception as e:

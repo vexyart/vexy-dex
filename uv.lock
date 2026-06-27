@@ -2007,6 +2007,7 @@ dependencies = [
     { name = "httpx", extra = ["http2"] },
     { name = "loguru" },
     { name = "lxml" },
+    { name = "playwright" },
     { name = "pypdf" },
     { name = "rich" },
     { name = "selectolax" },
@@ -2017,9 +2018,6 @@ all = [
     { name = "pikepdf" },
     { name = "playwright" },
     { name = "trafilatura" },
-]
-browser = [
-    { name = "playwright" },
 ]
 extract = [
     { name = "trafilatura" },
@@ -2049,15 +2047,15 @@ requires-dist = [
     { name = "lxml", specifier = ">=5.2" },
     { name = "pikepdf", marker = "extra == 'all'", specifier = ">=9.4" },
     { name = "pikepdf", marker = "extra == 'pdf'", specifier = ">=9.4" },
+    { name = "playwright", specifier = ">=1.48" },
     { name = "playwright", marker = "extra == 'all'", specifier = ">=1.48" },
-    { name = "playwright", marker = "extra == 'browser'", specifier = ">=1.48" },
     { name = "pypdf", specifier = ">=5.0" },
     { name = "rich", specifier = ">=13.7" },
     { name = "selectolax", specifier = ">=0.3.21" },
     { name = "trafilatura", marker = "extra == 'all'", specifier = ">=1.12" },
     { name = "trafilatura", marker = "extra == 'extract'", specifier = ">=1.12" },
 ]
-provides-extras = ["all", "browser", "extract", "pdf", "vision"]
+provides-extras = ["all", "extract", "pdf", "vision"]
 
 [package.metadata.requires-dev]
 dev = [

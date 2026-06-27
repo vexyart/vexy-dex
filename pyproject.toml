@@ -21,11 +21,12 @@ dependencies = [
     "loguru>=0.7",
     "rich>=13.7",
     "anyio>=4",
+    # `live` fetch mode (the default, issue 103) drives a headless browser.
+    "playwright>=1.48",
 ]
 
 [project.optional-dependencies]
 # Heavy / platform-specific engines kept optional so the core installs anywhere.
-browser = ["playwright>=1.48"]
 extract = ["trafilatura>=1.12"]
 pdf = ["pikepdf>=9.4"]
 vision = ["instructor>=1"]
@@ -39,6 +40,8 @@ all = [
 vexy-dexypy = "vexy_dexypy.__main__:main"
 
 [project.entry-points."vexy_dexypy.readers"]
+live = "vexy_dexypy.readers.live:LiveReader"
+offline = "vexy_dexypy.readers.offline:OfflineReader"
 static = "vexy_dexypy.readers.static:StaticReader"
 dynamic = "vexy_dexypy.readers.dynamic:DynamicReader"
 
