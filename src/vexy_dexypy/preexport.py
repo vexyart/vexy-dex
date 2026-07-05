@@ -40,7 +40,7 @@ _THEME_CSS = """\
 # these frameworks we render the page's own CSS faithfully and only hide the
 # Webflow badge (issue: faithful Webflow/Framer rendering).
 _FAITHFUL_FRAMEWORKS = {"webflow", "framer"}
-_FAITHFUL_CSS = '.w-webflow-badge { display: none !important; }'
+_FAITHFUL_CSS = ".w-webflow-badge { display: none !important; }"
 
 
 def theme_css(framework: str) -> str:
@@ -119,10 +119,12 @@ def _bundle_impress(html: str, strat_dir, plan: SlidePlan, theme: str) -> str:
 
     for i, sec in enumerate(sections):
         sec.extract()
-        classes = sec.get("class") or []
+        # bs4 types get() as str|list; "class" is always multi-valued (a list).
+        raw: str | list[str] = sec.get("class") or []
+        classes: list[str] = raw if isinstance(raw, list) else [raw]
         if "step" not in classes:
             classes.append("step")
-        sec["class"] = classes
+        sec["class"] = classes  # type: ignore[assignment]
         sec["data-x"] = str(i * (plan.stage_w + 400))
         sec["data-y"] = "0"
         impress_div.append(sec)
@@ -212,9 +214,7 @@ def prepare(page: PageDoc, plan: SlidePlan, strategy: Strategy) -> RenderJob:
     head_nodes = dom.head_styles(soup)
     sections = [
         sec
-        for sec in (
-            soup.body.find_all("section", recursive=False) if soup.body else []
-        )
+        for sec in (soup.body.find_all("section", recursive=False) if soup.body else [])
     ]
 
     if chassis == "reveal":
@@ -247,4 +247,3 @@ def prepare(page: PageDoc, plan: SlidePlan, strategy: Strategy) -> RenderJob:
         html_path=job_file,
         extra_css=[css_path],
     )
-

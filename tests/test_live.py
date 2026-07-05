@@ -22,8 +22,10 @@ FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def test_inject_base_adds_base_tag_when_missing():
-    out = _inject_base("<html><head><title>t</title></head><body></body></html>",
-                       "https://example.test/p")
+    out = _inject_base(
+        "<html><head><title>t</title></head><body></body></html>",
+        "https://example.test/p",
+    )
     assert '<base href="https://example.test/p"' in out
 
 

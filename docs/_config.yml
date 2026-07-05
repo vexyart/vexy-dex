@@ -1,0 +1,12 @@
+# this_file: docs/_config.yml
+title: vexy-dexypy
+description: Turn any web page into slide decks — several engines at once — and keep the slides you like.
+remote_theme: just-the-docs/just-the-docs
+color_scheme: light
+aux_links:
+  vexy-dexypy on GitHub:
+    - https://github.com/vexyart/vexy-dexypy
+  vexy-dexypy on PyPI:
+    - https://pypi.org/project/vexy-dexypy/
+plugins:
+  - jekyll-remote-theme

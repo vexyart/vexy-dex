@@ -144,6 +144,10 @@ becomes possible ([spec/11](spec/11.md), [spec/15](spec/15.md), [spec/16](spec/1
 - [x] `./test.sh` (ruff + pytest + example smoke) ([spec/23](spec/23.md))
 - [x] Manual acceptance vs blog.fontlab.com (14/15 slides, 2 strategies, offline localize OK); vexy.art/fontlab.com pending ([spec/23](spec/23.md))
 - [x] Keep README/CHANGELOG/PLAN/WORK/DEPENDENCIES current ([spec/24](spec/24.md))
+- [x] CI: `.github/workflows/ci.yml` — offline tests on Ubuntu/macOS/Windows × Py3.12/3.13 + ruff/mypy lint
+- [x] Release: `.github/workflows/release.yml` — tag → build → PyPI trusted publish + GitHub release
+- [x] `mypy` clean (`[tool.mypy]` config + bs4 `Tag` narrowing); `ruff format` applied tree-wide
+- [x] Docs: Jekyll + Just the Docs site (`docs/index.md`, `docs/_config.yml`) + project icon (`docs/assets/icon.png`)
 
 ## Issue 103 — browser-native pipeline + `vexy-dexyjs` npm package
 

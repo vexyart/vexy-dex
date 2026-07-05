@@ -5,6 +5,8 @@
 **Turn any web page into slide decks — several at once — and keep the slides you
 like.**
 
+![One URL fanning out into five presses, each printing its own stack of slides](docs/assets/icon.png)
+
 vexy-dexypy takes one URL, figures out where the slides hiding inside the page
 should break, and renders it to PDF through several engines in parallel. Each
 engine writes its own folder of single-page PDFs. You skim the folders and build
@@ -15,9 +17,11 @@ and that's the whole point — you get a menu, not a verdict.
 It runs offline after the first fetch, it's a Python CLI, and it delegates DOM
 preprocessing to a companion JavaScript package `vexy-dexyjs` running in the browser.
 
-> Status: **specification complete, implementation starting.** This repo
-> currently holds the design — see [`spec/`](spec/00-tldr.md). The roadmap is in
-> [spec/24](spec/24.md) and [`TODO.md`](TODO.md).
+> Status: **core pipeline implemented, engines maturing.** The six-stage pipeline
+> — read, analyze, normalize, prepare, render, write — runs end to end against
+> the Playwright, Vivliostyle and reveal.js engines, with an offline test suite
+> over fixtures. The design lives in [`spec/`](spec/00-tldr.md) (24 chapters);
+> remaining work is tracked in [`TODO.md`](TODO.md).
 
 ## Why it exists
 

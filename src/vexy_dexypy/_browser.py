@@ -35,7 +35,9 @@ SETTLE_MS = 400  # brief pause after `load` for fonts/layout/JS to settle
 
 
 @contextlib.contextmanager
-def serving(pg: Page, html_path: Path, *, settle_ms: int = SETTLE_MS, timeout: int = 30_000):
+def serving(
+    pg: Page, html_path: Path, *, settle_ms: int = SETTLE_MS, timeout: int = 30_000
+):
     """Serve `html_path` over loopback HTTP, navigate to it, keep it up in-scope.
 
     The server stays alive for the whole `with` body so lazily-loaded assets,
@@ -71,11 +73,13 @@ def launched_browser(settings: Settings) -> Generator[PlaywrightBrowser, None, N
         if str(p_path) not in sys.path:
             sys.path.insert(0, str(p_path))
         from playwrightauthor import Browser as AuthorBrowser
+
         with AuthorBrowser() as browser:
             yield browser
 
     elif engine == "cloakbrowser":
         import cloakbrowser
+
         browser = cloakbrowser.launch(headless=True)
         try:
             yield browser
@@ -84,6 +88,7 @@ def launched_browser(settings: Settings) -> Generator[PlaywrightBrowser, None, N
 
     else:  # default standard playwright
         from playwright.sync_api import sync_playwright
+
         with sync_playwright() as p:
             browser = p.chromium.launch()
             yield browser

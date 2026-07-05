@@ -4,6 +4,28 @@
 
 ## Unreleased
 
+### Added
+
+- **Continuous integration.** `.github/workflows/ci.yml` runs the offline test
+  suite on Ubuntu, macOS and Windows across Python 3.12 and 3.13, plus a lint job
+  (`ruff check`, `ruff format --check`, `mypy`). All jobs use `uv`.
+- **Release automation.** `.github/workflows/release.yml` builds the sdist/wheel
+  on every `v*` tag, publishes to PyPI via trusted publishing, and cuts a GitHub
+  release with the matching changelog section attached.
+- **Documentation site.** `docs/` now carries a Jekyll + Just the Docs page
+  (`docs/index.md`, `docs/_config.yml`) for GitHub Pages, with a hand-drawn
+  project icon at `docs/assets/icon.png`.
+
+### Changed
+
+- **`mypy` is now clean.** Added a pragmatic `[tool.mypy]` config and resolved the
+  BeautifulSoup `Tag`/`PageElement` typing friction in `dom.py`, `preexport.py`
+  and the importers with `isinstance` guards (no runtime change).
+- **`ruff format` applied** across `src/` and `tests/` so the tree is
+  format-clean and CI can enforce it.
+- **README status** updated from "specification complete, implementation
+  starting" to reflect the working core pipeline and offline test suite.
+
 ### Fixed
 
 - **Faithful rendering of designed pages — no more white-bg/margin override.**

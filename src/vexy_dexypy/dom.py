@@ -101,10 +101,10 @@ def split_to_count(container: Tag, target: int) -> list[Tag]:
     slide.
     """
     soup = BeautifulSoup("", "lxml")
-    blocks = [c for c in container.children if getattr(c, "name", None)]
+    blocks = [c for c in container.children if isinstance(c, Tag)]
     # If the container is a single wrapper, descend one level.
     if len(blocks) == 1 and list(blocks[0].children):
-        inner = [c for c in blocks[0].children if getattr(c, "name", None)]
+        inner = [c for c in blocks[0].children if isinstance(c, Tag)]
         if len(inner) > 1:
             blocks = inner
     target = max(1, min(target, len(blocks)))
@@ -148,10 +148,8 @@ def _content_root(content_html: str) -> Tag:
     """
     root = parse(content_html).body or parse(content_html)
     while True:
-        kids = [c for c in root.children if getattr(c, "name", None)]
-        if len(kids) == 1 and list(
-            c for c in kids[0].children if getattr(c, "name", None)
-        ):
+        kids = [c for c in root.children if isinstance(c, Tag)]
+        if len(kids) == 1 and list(c for c in kids[0].children if isinstance(c, Tag)):
             root = kids[0]
         else:
             return root
@@ -194,7 +192,8 @@ def wrap_reveal(sections: list[Tag], head_nodes: list[Tag] | None = None) -> str
     assert slides is not None
     for sec in sections:
         if "slide" not in (sec.get("class") or []):
-            sec["class"] = [*(sec.get("class") or []), "slide"]
+            # bs4 stub types the setter as str|AttributeValueList; a list is valid.
+            sec["class"] = [*(sec.get("class") or []), "slide"]  # type: ignore[assignment]
         slides.append(sec)
     return str(soup)
 
@@ -211,8 +210,7 @@ def wrap_neutral(sections: list[Tag], head_nodes: list[Tag] | None = None) -> st
     sections inside the body.
     """
     soup = BeautifulSoup(
-        '<!doctype html><html><head><meta charset="utf-8"></head>'
-        '<body></body></html>',
+        '<!doctype html><html><head><meta charset="utf-8"></head><body></body></html>',
         "lxml",
     )
     head = soup.head
@@ -223,7 +221,8 @@ def wrap_neutral(sections: list[Tag], head_nodes: list[Tag] | None = None) -> st
     assert body is not None
     for sec in sections:
         if "slide" not in (sec.get("class") or []):
-            sec["class"] = [*(sec.get("class") or []), "slide"]
+            # bs4 stub types the setter as str|AttributeValueList; a list is valid.
+            sec["class"] = [*(sec.get("class") or []), "slide"]  # type: ignore[assignment]
         body.append(sec)
     return str(soup)
 
@@ -231,7 +230,11 @@ def wrap_neutral(sections: list[Tag], head_nodes: list[Tag] | None = None) -> st
 def already_neutral(html: str) -> bool:
     """Check if the document is already in the framework-neutral slide format."""
     soup = parse(html)
-    if soup.select_one("div.reveal") or soup.select_one("#impress") or soup.select_one(".marp"):
+    if (
+        soup.select_one("div.reveal")
+        or soup.select_one("#impress")
+        or soup.select_one(".marp")
+    ):
         return False
     body = soup.body
     if not body:
@@ -240,11 +243,10 @@ def already_neutral(html: str) -> bool:
     if not sections:
         return False
     for child in body.children:
-        if not getattr(child, "name", None):
+        if not isinstance(child, Tag):
             continue
         if child.name in ("script", "style"):
             continue
         if child.name != "section" or "slide" not in (child.get("class") or []):
             return False
     return True
-

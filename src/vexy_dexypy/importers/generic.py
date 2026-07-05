@@ -30,14 +30,21 @@ class GenericImporter:
             "framework": self.name,
             "stageWidth": plan.stage_w,
             "stageHeight": plan.stage_h,
-            "breaks": [{"y": b.y, "reason": b.reason, "confidence": b.confidence} for b in plan.breaks]
+            "breaks": [
+                {"y": b.y, "reason": b.reason, "confidence": b.confidence}
+                for b in plan.breaks
+            ],
         }
         logger.info("running browser preprocessor for framework: {}", self.name)
         try:
-            normalized_html = run_js_preprocessor(page.html_path, actual_settings, config)
+            normalized_html = run_js_preprocessor(
+                page.html_path, actual_settings, config
+            )
             return write_normalized(page, normalized_html)
         except Exception as e:
-            logger.error("browser preprocessor failed: {}; falling back to python sectionizer", e)
+            logger.error(
+                "browser preprocessor failed: {}; falling back to python sectionizer", e
+            )
             body_html = self._extract(raw)
             sections = dom.sectionize(body_html, target=plan.slide_count)
             head = dom.head_styles(dom.parse(raw))

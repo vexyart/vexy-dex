@@ -28,10 +28,10 @@ def _page(tmp_path) -> PageDoc:
 def test_chassis_divergence_guarantee(tmp_path):
     # Tests that the exact same neutral IR rendered through different strategy chassis
     # produces distinctly formatted documents (reveal, paged, impress, marp).
-    
+
     page = _page(tmp_path)
     plan = SlidePlan(1920, 1080)
-    
+
     # 1. Reveal Chassis
     reveal_strategy = Strategy("reveal", "reveal", chassis="reveal")
     reveal_job = preexport.prepare(page, plan, reveal_strategy)

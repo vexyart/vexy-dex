@@ -86,14 +86,21 @@ class WebflowImporter:
             "framework": self.name,
             "stageWidth": plan.stage_w,
             "stageHeight": plan.stage_h,
-            "breaks": [{"y": b.y, "reason": b.reason, "confidence": b.confidence} for b in plan.breaks]
+            "breaks": [
+                {"y": b.y, "reason": b.reason, "confidence": b.confidence}
+                for b in plan.breaks
+            ],
         }
         logger.info("running browser preprocessor for framework: {}", self.name)
         try:
-            normalized_html = run_js_preprocessor(page.html_path, actual_settings, config)
+            normalized_html = run_js_preprocessor(
+                page.html_path, actual_settings, config
+            )
             return write_normalized(page, normalized_html)
         except Exception as e:
-            logger.error("browser preprocessor failed: {}; falling back to python sectionizer", e)
+            logger.error(
+                "browser preprocessor failed: {}; falling back to python sectionizer", e
+            )
             soup = dom.parse(raw)
             # The "Made in Webflow" badge is injected on free sites; drop it before
             # extraction (the section path skips drop_chrome) — belt-and-braces with
@@ -107,7 +114,8 @@ class WebflowImporter:
                     continue
                 color = _bg_color(section)
                 section["data-background-color"] = color
-                section["class"] = [
+                # bs4 stub types the setter as str|AttributeValueList; a list is valid.
+                section["class"] = [  # type: ignore[assignment]
                     *(section.get("class") or []),
                     "slide",
                     dom.bg_class(color),
@@ -127,4 +135,6 @@ class WebflowImporter:
 
             # Carry the page's stylesheets so the Webflow design survives wrapping —
             # without them the extracted sections render as unstyled HTML.
-            return write_normalized(page, dom.wrap_neutral(sections, dom.head_styles(soup)))
+            return write_normalized(
+                page, dom.wrap_neutral(sections, dom.head_styles(soup))
+            )

@@ -44,19 +44,29 @@ class MkdocsImporter:
             "framework": self.name,
             "stageWidth": plan.stage_w,
             "stageHeight": plan.stage_h,
-            "breaks": [{"y": b.y, "reason": b.reason, "confidence": b.confidence} for b in plan.breaks]
+            "breaks": [
+                {"y": b.y, "reason": b.reason, "confidence": b.confidence}
+                for b in plan.breaks
+            ],
         }
         logger.info("running browser preprocessor for framework: {}", self.name)
         try:
-            normalized_html = run_js_preprocessor(page.html_path, actual_settings, config)
+            normalized_html = run_js_preprocessor(
+                page.html_path, actual_settings, config
+            )
             return write_normalized(page, normalized_html)
         except Exception as e:
-            logger.error("browser preprocessor failed: {}; falling back to python sectionizer", e)
+            logger.error(
+                "browser preprocessor failed: {}; falling back to python sectionizer", e
+            )
             soup = dom.parse(raw)
             dom.drop_chrome(soup, _CHROME)
             content = soup.select_one("article.md-content__inner") or soup.body or soup
             # Code blocks and tables ride along inside content — never stripped.
             sections = dom.sectionize(str(content), target=plan.slide_count)
             for sec in sections:
-                sec["class"] = [*(sec.get("class") or []), "slide-light-bg"]
-            return write_normalized(page, dom.wrap_neutral(sections, dom.head_styles(soup)))
+                # bs4 stub types the setter as str|AttributeValueList; a list is valid.
+                sec["class"] = [*(sec.get("class") or []), "slide-light-bg"]  # type: ignore[assignment]
+            return write_normalized(
+                page, dom.wrap_neutral(sections, dom.head_styles(soup))
+            )
